@@ -18,5 +18,7 @@ Installation recommendation:
 * Newer version of Python 2.7 (like 2.7.15) come with pip preinstalled. Pip is a simple package manager for Python (and pip3 its Python 3 counterpart)
 * For this project:
 > pip install opencv-python
+
 > pip install matplotlib
+
 > pip install numpy
