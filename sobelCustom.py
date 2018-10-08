@@ -1,6 +1,6 @@
 import numpy as np
 import cv2 as cv
-import math as m
+import matplotlib.pyplot as plt
 
 # Making constants the Python way
 # "Making them in a separate file and importing
@@ -56,8 +56,8 @@ def createEdgeImage(img=-1):
         # convolution operation
         x_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
         y_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
-        # TODO normalize and do xy image
-        #xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
+        
+        xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
         for i in range(1,img.shape[0]-1):
             for j in range(1,img.shape[1]-1):
                 #Initialize Gx & Gy for each pixel
@@ -70,13 +70,44 @@ def createEdgeImage(img=-1):
                 # Call the convolution function
                 Gx, Gy = sobelFilter(workingArea)
                 x_image[i-1][j-1] = Gx
-                y_image[i-1][j-1] = Gy
+                y_image[i-1][j-1] = Gy       
+                # Calculate module to using root of sum of squares
+                xy_image[i-1][j-1] = np.sqrt(Gx**2+Gy**2)
                 
+        #Normalize xy_image to range 0-255 before returning image
+        maxVal = np.max(xy_image)
+        xy_image = (xy_image/maxVal)*255
+        
+        return xy_image
+    
+def detectAndShow(imgpath=0):
+    # path to img
+    img = cv.imread(imgpath,cv.IMREAD_GRAYSCALE)
 
-        return x_image, y_image
-    
-    
-    
-    
-    
-    
+
+    # show image 'for visibility'
+    # if color img
+    #plt.imshow(cv.cvtColor(img,COLOR_BGR2RGB))
+    # if gray img
+    plt.imshow(img,cmap='gray')
+    # take away ticks from image
+    plt.xticks([])
+    plt.yticks([])
+
+    # plt.show doesn't work well with further interaction
+    # taken away so users manually "plt.show()" in their terminals
+    #plt.show()
+
+    # This is where the processing begins
+    xy_img = createEdgeImage(np.array(img,np.float64))
+
+    # Convert back to Grayscale
+    xy_img = np.uint8(xy_img)
+
+    # Plot side by side for comparison
+    plt.subplot(1,2,1), plt.imshow(img,cmap='gray')
+    plt.title('Original'), plt.xticks([]), plt.yticks([])
+    plt.subplot(1,2,2), plt.imshow(xy_img,cmap='gray')
+    plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
+    plt.show()
+
