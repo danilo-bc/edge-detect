@@ -1,3 +1,5 @@
+# Author: Danilo Cavalcanti
+# Importing System Modules
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
@@ -72,7 +74,7 @@ def createEdgeImage(img=-1):
                 x_image[i-1][j-1] = Gx
                 y_image[i-1][j-1] = Gy       
                 # Calculate module to using root of sum of squares
-                xy_image[i-1][j-1] = np.sqrt(Gx**2+Gy**2)
+                xy_image[i-1][j-1] = np.abs(Gx)+np.abs(Gy)
                 
         #Normalize xy_image to range 0-255 before returning image
         maxVal = np.max(xy_image)
