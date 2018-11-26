@@ -105,11 +105,13 @@ def detectAndShow(imgpath=0):
 
     # Convert back to Grayscale
     xy_img = np.uint8(xy_img)
-
+    
     # Plot side by side for comparison
     plt.subplot(1,2,1), plt.imshow(img,cmap='gray')
     plt.title('Original'), plt.xticks([]), plt.yticks([])
     plt.subplot(1,2,2), plt.imshow(xy_img,cmap='gray')
     plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
     plt.show()
+    
+    return xy_img
 
