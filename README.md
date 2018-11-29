@@ -11,14 +11,15 @@ Current Status:
    Fort Collins, Colorado. Vol 1, pp 354-359. June 1999.](http://figment.csee.usf.edu/edge/roc/)
    
 Python dependencies:
-* Python 2.7
+* Python 3.6.7
 * opencv, matplotlib and numpy
 
 Installation recommendation:
-* Newer version of Python 2.7 (like 2.7.15) come with pip preinstalled. Pip is a simple package manager for Python (and pip3 its Python 3 counterpart)
+* Newer version of Python 3 (like 3.6.x) come with pip preinstalled. Pip is a simple package manager for Python (normally aliased as pip3)
 * For this project:
-> pip install opencv-python
+```bash
+pip3 install numpy
+pip3 install opencv-python
+pip3 install matplotlib
+```
 
-> pip install matplotlib
-
-> pip install numpy
