@@ -113,5 +113,5 @@ def detectAndShow(imgpath=0):
     plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
     plt.show()
     
-    return xy_img
+    return img,xy_img
 
