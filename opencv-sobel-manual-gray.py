@@ -6,16 +6,16 @@ import numpy as np
 
 # Import personal implementation library
 from sobelCustom import *
-print("--------------------------------------------------------")
-print("--------------------------------------------------------")
-print("Sucessfully loaded personal Sobel Filter implementation")
-print("How to demo: ")
-print("Use function 'detectAndShow(path)'")
-print("Example: src,edges = detectAndShow('/home/images/photo.jpg')")
-print("Result: photo printed on screen with edges detected,")
-print("base image returned as 'src' and")
-print("edge image returned into 'edges' variable as numpy matrix")
-print("--------------------------------------------------------")
-print("--------------------------------------------------------")
+print('''------------------------------------------------------------------
+------------------------------------------------------------------
+Sucessfully loaded personal Sobel Filter implementation
+How to demo:
+Use functions 'detectAndShow(image)' or 'detectAndWritePGM(image)'
+Example: src,edges = detectAndShow('./images/aerial/school.pgm')
+Result: photo printed on screen with edges detected,
+base image returned as 'src' and
+edge image returned into 'edges' variable as numpy matrix
+------------------------------------------------------------------
+------------------------------------------------------------------''')
 import code
 code.interact(local=locals())
