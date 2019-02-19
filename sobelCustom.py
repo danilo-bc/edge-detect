@@ -85,9 +85,9 @@ def createEdgeImage(img=-1):
 def detectAndShow(imgpath=0):
 	# Load image from path
 	# Basic validness check before operating
-	if(type(imgpath)==str):
+	if(isinstance(imgpath,str)):
 		img = cv.imread(imgpath,cv.IMREAD_GRAYSCALE)
-		if(img==None):
+		if(isinstance(img,type(None))):
 			print("Image could not be loaded")
 			return -1,-1
 	else:
@@ -98,7 +98,7 @@ def detectAndShow(imgpath=0):
 	# if color img
 	#plt.imshow(cv.cvtColor(img,COLOR_BGR2RGB))
 	# if gray img
-	plt.imshow(ig,cmap='gray')
+	plt.imshow(img,cmap='gray')
 	# tamke away ticks from image
 	plt.xticks([])
 	plt.yticks([])
@@ -125,9 +125,9 @@ def detectAndShow(imgpath=0):
 def detectAndWritePGM(imgpath=0):
 	# Load image from path
 	# Basic validness check before operating
-	if(type(imgpath)==str):
+	if(isinstance(imgpath,str)):
 		img = cv.imread(imgpath,cv.IMREAD_GRAYSCALE)
-		if(img==None):
+		if(isinstance(img,type(None))):
 			print("Image could not be loaded")
 			return -1,-1
 	else:
