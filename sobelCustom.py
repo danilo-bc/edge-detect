@@ -150,3 +150,94 @@ def detectAndWritePGM(imgpath=0):
 		print('''Something went wrong during the saving process''')
 
 	return img,xy_img
+
+def saveTo2ByteHex(filename=None,numpyarray=np.zeros(1)):
+	'''Saves image in memory in NumPy's uint8 format
+	into a text file with two hexadecimal characters
+	txt format is preferrable.
+	'''
+	if(not filename):
+		print("Invalid filename")
+		return 0
+	np.savetxt(filename,numpyarray,"%.2x")
+
+def importHex(filename=None):
+	'''Reads a txt file containing a NumPy image in uint8
+	format saved in pairs of hexadecimal characters.
+	Returns the image as a NumPy uint8 array.
+	'''
+	if(not filename):
+		print("Invalid hex filename")
+		return None
+	elif(isinstance(type(filename),str)):
+		print("Invalid hex filename")
+		return None
+	elif(filename[-3:]!='txt'):
+		print("Invalid hex filename")
+		return None
+	else:
+		#Load images stored in hex txt files
+		input_img = open(filename)
+
+		#Put the contents into list of strings
+		input_str = input_img.readlines()
+
+		#Close file after reading
+		input_img.close()
+
+		#Prepare matrices
+		input_mat = []
+
+		#Take away trailing new line('\n') and convert to
+		#List of byte arrays
+		for i in range(len(input_str)):
+			input_str[i] = input_str[i].rstrip('\n')
+			input_mat.append(bytearray.fromhex(input_str[i]))
+
+		#Convert bytes into unsigned 8-bit integers
+		#This is one of the compatible image formats
+		input_mat = np.array(input_mat,np.uint8)
+		return input_mat
+
+def showHexImg(filename=None):
+	'''Reads a txt file containing a NumPy image in uint8
+	format saved in pairs of hexadecimal characters.
+	Shows the image on the screen and returns the
+	image as a NumPy uint8 array.
+	'''
+	if(not filename):
+		print("Invalid hex filename")
+		return 0
+	elif(isinstance(type(filename),str)):
+		print("Invalid hex filename")
+		return None
+	elif(filename[-3:]!='txt'):
+		print("Invalid hex filename")
+		return 0
+	else:
+		#Load image stored in hex txt files
+		input_img = open(filename)
+
+		#Put the contents into list of strings
+		input_str = input_img.readlines()
+
+		#Close file after reading
+		input_img.close()
+
+		#Prepare matrices
+		input_mat = []
+
+		#Take away trailing new line('\n') and convert to
+		#List of byte arrays
+		for i in range(len(input_str)):
+			input_str[i] = input_str[i].rstrip('\n')
+			input_mat.append(bytearray.fromhex(input_str[i]))
+
+		#Convert bytes into unsigned 8-bit integers
+		#This is one of the compatible image formats
+		input_mat = np.array(input_mat,np.uint8)
+
+		#Plot the image
+		plt.imshow(input_mat,cmap='gray')
+		plt.show()
+		return input_mat
