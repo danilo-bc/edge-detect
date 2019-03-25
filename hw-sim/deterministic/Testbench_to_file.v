@@ -19,6 +19,10 @@ module Testbench_to_file();
 	reg [7:0] z4;
 	reg [7:0] z5;
 	reg [7:0] z6;
+	reg [7:0] z7;
+	reg [7:0] z8;
+	reg [7:0] z9;
+
 
 	wire [11:0] z_out; //binary value of output
 
@@ -31,6 +35,9 @@ module Testbench_to_file();
 					 .z4(z4),
 					 .z5(z5),
 					 .z6(z6),
+					 .z7(z7),
+					 .z8(z8),
+					 .z9(z9),
 					 .z_out(z_out)
 					);
 
@@ -45,6 +52,10 @@ module Testbench_to_file();
 		z4 = 8'h00;
 		z5 = 8'h00;
 		z6 = 8'h00;
+		z7 = 8'h00;
+		z8 = 8'h00;
+		z9 = 8'h00;
+
 
 		#2
 		//Load image coded in hexadecimal as memory
@@ -57,13 +68,19 @@ module Testbench_to_file();
 		begin
 			for(j=1;j<src_cols-1;j=j+1)
 			begin
-				// Input for Gy
+				// Input area around pixel z5
+				// Row above z5
 				z1 = src[src_cols*(i-1)+j-1];
 				z2 = src[src_cols*(i-1)+j];
 				z3 = src[src_cols*(i-1)+j+1];
-				z4 = src[src_cols*(i+1)+j-1];
-				z5 = src[src_cols*(i+1)+j];
-				z6 = src[src_cols*(i+1)+j+1];
+				// Row of z5
+				z4 = src[src_cols*(i)+j-1];
+				z5 = src[src_cols*(i)+j];
+				z6 = src[src_cols*(i)+j+1];
+				// Row below z5
+				z7 = src[src_cols*(i+1)+j-1];
+				z8 = src[src_cols*(i+1)+j];
+				z9 = src[src_cols*(i+1)+j+1];
 
 				#2 // give an instant for z_out to update
 				//edges[src_cols*(i-1)+j-1]=z_out;
