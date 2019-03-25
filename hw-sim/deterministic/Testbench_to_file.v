@@ -13,6 +13,10 @@ module Testbench_to_file();
 	// Auxiliary variables for counting in loops
 	integer i,j;
 
+	// Auxiliary variable to normalize for 8-bit image
+	integer biggest;
+
+	// Registers and wires for the Sobel module
 	reg [7:0] z1;
 	reg [7:0] z2;
 	reg [7:0] z3;
@@ -23,9 +27,10 @@ module Testbench_to_file();
 	reg [7:0] z8;
 	reg [7:0] z9;
 
+	wire [11:0] z_out;
 
-	wire [11:0] z_out; //binary value of output
-
+	// Auxiliary system signals
+	// May be used in the future
 	reg clk;
 	reg reset;
 
@@ -55,6 +60,7 @@ module Testbench_to_file();
 		z7 = 8'h00;
 		z8 = 8'h00;
 		z9 = 8'h00;
+		biggest = 0;
 
 
 		#2
@@ -83,8 +89,13 @@ module Testbench_to_file();
 				z9 = src[src_cols*(i+1)+j+1];
 
 				#2 // give an instant for z_out to update
+				// Update biggest number to normalize later
+				if(z_out > biggest) begin
+					biggest = z_out;
+				end
 				//edges[src_cols*(i-1)+j-1]=z_out;
 				//$display("edges: %h",edges[src_cols*(i-1)+j-1]);
+				//$display("Maior = %d", biggest);
 				$fwrite(f,"%x ",z_out);
 			end
 			$fwrite(f,"\n");
