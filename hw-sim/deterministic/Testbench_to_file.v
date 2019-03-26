@@ -1,12 +1,10 @@
 module Testbench_to_file();
-	//parameter src_rows = 436;
-	//parameter src_cols = 576;
-	parameter src_rows = 3;
-	parameter src_cols = 4;
+	parameter src_rows = 436;
+	parameter src_cols = 576;
 	parameter src_size = src_rows*src_cols;
-	//parameter edge_size = (src_rows-1)*(src_cols-1);
+	parameter edge_size = (src_rows-1)*(src_cols-1);
 	reg [7:0] src [0:src_size-1];
-	//reg [11:0] edges [0:edge_size-1];
+	reg [11:0] edges [0:edge_size-1];
 
 	// Variable to save file handle
 	integer f;
@@ -34,7 +32,8 @@ module Testbench_to_file();
 	reg clk;
 	reg reset;
 
-	sobel3x3det det1(.z1(z1),
+	// Instantiate device under test (DUT)
+	sobel3x3det DUT(.z1(z1),
 					 .z2(z2),
 					 .z3(z3),
 					 .z4(z4),
@@ -46,11 +45,13 @@ module Testbench_to_file();
 					 .z_out(z_out)
 					);
 
+	// Clock may be used later for stochastic
 	always begin
 		#1 clk <= ~clk;
 	end
 
 	initial begin
+		// Default inputs for unit tests
 		z1 = 8'h01;
 		z2 = 8'h00;
 		z3 = 8'h00;
@@ -60,21 +61,17 @@ module Testbench_to_file();
 		z7 = 8'h00;
 		z8 = 8'h00;
 		z9 = 8'h00;
+		// Initialize 'biggest' auxiliary variable
 		biggest = 0;
-
 
 		#2
 		//Load image coded in hexadecimal as memory
-		$display("z_out = %x",z_out);
-
 		$display("Loading image into memory");
-		$readmemh("teste.txt",src);
-		f = $fopen("teste_after_load.txt","w");
-		for (i=1;i<src_rows-1;i=i+1)
-		begin
-			for(j=1;j<src_cols-1;j=j+1)
-			begin
-				// Input area around pixel z5
+		$readmemh("src.txt",src);
+
+		// 'Crop' area around central pixel z5
+		for (i=1;i<src_rows-1;i=i+1) begin
+			for(j=1;j<src_cols-1;j=j+1) begin
 				// Row above z5
 				z1 = src[src_cols*(i-1)+j-1];
 				z2 = src[src_cols*(i-1)+j];
@@ -93,20 +90,21 @@ module Testbench_to_file();
 				if(z_out > biggest) begin
 					biggest = z_out;
 				end
-				//edges[src_cols*(i-1)+j-1]=z_out;
-				//$display("edges: %h",edges[src_cols*(i-1)+j-1]);
-				//$display("Maior = %d", biggest);
-				$fwrite(f,"%x ",z_out);
+				edges[src_cols*(i-1)+j-1]=z_out;
+			end
+
+		end
+		f = $fopen("edges_hw_det.txt","w");
+		// Normalize to 8 bits and write to file
+		for (i=0;i<src_rows-2;i=i+1) begin
+			for(j=0;j<src_cols-2;j=j+1) begin
+				edges[src_cols*(i)+j] = (edges[src_cols*(i)+j]*255)/biggest;
+				$fwrite(f,"%x ",edges[src_cols*(i)+j][7:0]);
 			end
 			$fwrite(f,"\n");
 		end
 		$fclose(f);
 
-		//$display("Loading reference image into memory");
-		//$readmemh("edges.txt",edges);
-//TODO: automatically compare edges.txt and output of test up until now
-
-		//$stop;
 		$finish;
 	end
 
