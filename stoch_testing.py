@@ -19,5 +19,11 @@ edge image returned into 'edges' variable as numpy matrix
 ------------------------------------------------------------------
 ------------------------------------------------------------------''')
 """
+lfsr_reset()
+lfsr_set_seed('1000')
+lfsr_restart()
+for i in range(16):
+	print(lfsr().to01())
+
 import code
 code.interact(local=locals())
