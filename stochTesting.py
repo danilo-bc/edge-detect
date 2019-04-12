@@ -19,9 +19,8 @@ edge image returned into 'edges' variable as numpy matrix
 ------------------------------------------------------------------
 ------------------------------------------------------------------''')
 """
-lfsr_4_bit = lfsr(4,'0000')
-for i in range(16):
-	print(lfsr_4_bit.shift())
+lfsrAutoTest = lfsr()
+lfsrAutoTest.test()
 
-import code
-code.interact(local=locals())
+#import code
+#code.interact(local=locals())

@@ -95,3 +95,42 @@ class lfsr:
 
 		else:
 			self.xorOp = v[a-3]^v[a-2]
+	def test(self):
+		# Test 4-bit LFSR
+		oracle = open("lfsr4b8bOracle.data",'r')
+		self.seed=('1000')
+		self.lfsrLen=4
+		self.restart()
+		fail4 = False
+		print("Beginning 4-bit LFSR test")
+		for i in range(16):
+			exp = bitarray(oracle.readline()[:-1])
+			eval = self.shift()
+			try:
+				assert (eval == exp.to01())
+			except AssertionError:
+				print("Error line: ",i+1,":\tOutput: "+eval+"\tExpected: "+exp.to01())
+				fail4 = True
+
+		# Test 8-bit LFSR
+		self.seed=('10000000')
+		self.lfsrLen=8
+		self.restart()
+		fail8 = False
+		print("Beginning 8-bit LFSR test")
+		for i in range(16):
+			exp = bitarray(oracle.readline()[:-1])
+			eval = self.shift()
+			try:
+				assert (eval == exp.to01())
+			except AssertionError:
+				print("Error line: ",i+17,":\tOutput: "+eval+"\tExpected: "+exp.to01())
+				fail8 = True
+
+		# Print if succesfull results
+		if(fail4 ==False):
+			print("4-bit test succesfull")
+		if(fail8 ==False):
+			print("8-bit test succesfull")
+		oracle.close()
+
