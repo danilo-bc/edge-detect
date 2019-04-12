@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import personal implementation library
-from sobelCustomStoch import *
+from stochLFSR import *
 """
 print('''------------------------------------------------------------------
 ------------------------------------------------------------------

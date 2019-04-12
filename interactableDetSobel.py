@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import personal implementation library
-from sobelCustom import *
+from detSobel import *
 print('''------------------------------------------------------------------
 ------------------------------------------------------------------
 Sucessfully loaded personal Sobel Filter implementation
