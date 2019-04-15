@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Making constants the Python way
 # "Making them in a separate file and importing
-# them on a main.py thing"
+# them on a main.py" thing
 sKernelX=np.array([[-1,0,1],
 						[-2,0,2],
 						[-1,0,1]],np.float64)
@@ -33,10 +33,9 @@ def sobelFilter(img=-1):
 		Gx = np.float64(0.0)
 		Gy = np.float64(0.0)
 
-		for i in range(3):
-			for j in range(3):
-				Gx += sKernelX[i][j]*img[i][j]
-				Gy += sKernelY[i][j]*img[i][j]
+		# Do the convolution in one of NumPy's way
+		Gx = np.sum(sKernelX*img)
+		Gy = np.sum(sKernelY*img)
 
 		return Gx,Gy
 
@@ -62,7 +61,7 @@ def createEdgeImage(img=-1):
 		xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
 		for i in range(1,img.shape[0]-1):
 			for j in range(1,img.shape[1]-1):
-				#Initialize Gx & Gy for each pixel
+				# Reset Gx & Gy for each pixel
 				Gx, Gy = 0, 0
 				# Get 3x3 submatrixes with np.ix_
 				# [i-1,i,i+1] = range(i-1,i+2)
@@ -73,13 +72,16 @@ def createEdgeImage(img=-1):
 				Gx, Gy = sobelFilter(workingArea)
 				x_image[i-1][j-1] = Gx
 				y_image[i-1][j-1] = Gy
-				# Calculate module to using root of sum of squares
-				xy_image[i-1][j-1] = np.abs(Gx)+np.abs(Gy)
 
-		#Normalize xy_image to range 0-255 before returning image
-		maxVal = np.max(xy_image)
-		xy_image = (xy_image/maxVal)*255
+		# Take absolute value and
+		x_image = np.abs(x_image)
+		y_image = np.abs(y_image)
+		# Saturate x and y_image to fit 8-bit
+		x_image[x_image>255] = 255
+		y_image[y_image>255] = 255
 
+		# Sum halves to keep results in [0-255]
+		xy_image = 0.5*x_image+0.5*y_image
 		return xy_image
 
 def detectAndShow(imgpath=0):
@@ -114,10 +116,13 @@ def detectAndShow(imgpath=0):
 	xy_img = np.uint8(xy_img)
 
 	# Plot side by side for comparison
-	plt.subplot(1,2,1), plt.imshow(img,cmap='gray')
-	plt.title('Original'), plt.xticks([]), plt.yticks([])
-	plt.subplot(1,2,2), plt.imshow(xy_img,cmap='gray')
-	plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
+	#plt.subplot(1,2,1), plt.imshow(img,cmap='gray')
+	#plt.title('Original'), plt.xticks([]), plt.yticks([])
+	#plt.subplot(1,2,2), plt.imshow(xy_img,cmap='gray')
+	#plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
+
+	# Plot only results
+	plt.imshow(xy_img,cmap='gray')
 	plt.show()
 
 	return img,xy_img
