@@ -96,19 +96,6 @@ def detectAndShow(imgpath=0):
 		print("Invalid image path")
 		return -1,-1
 
-	# show image 'for visibility'
-	# if color img
-	#plt.imshow(cv.cvtColor(img,COLOR_BGR2RGB))
-	# if gray img
-	plt.imshow(img,cmap='gray')
-	# tamke away ticks from image
-	plt.xticks([])
-	plt.yticks([])
-
-	# plt.show doesn't work well with further interaction
-	# taken away so users manually "plt.show()" in their terminals
-	#plt.show()
-
 	# This is where the processing begins
 	xy_img = createEdgeImage(np.array(img,np.float64))
 

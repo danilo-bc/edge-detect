@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import personal implementation library
-from stochLFSR import *
-"""
+from stochWrapper import *
 print('''------------------------------------------------------------------
 ------------------------------------------------------------------
 Sucessfully loaded personal Sobel Filter implementation
@@ -18,9 +17,10 @@ base image returned as 'src' and
 edge image returned into 'edges' variable as numpy matrix
 ------------------------------------------------------------------
 ------------------------------------------------------------------''')
-"""
-lfsrAutoTest = lfsr()
-lfsrAutoTest.test()
 
-#import code
-#code.interact(local=locals())
+# Test for LFSRs. Already checked, working.
+#lfsrAutoTest = lfsr()
+#lfsrAutoTest.test()
+
+import code
+code.interact(local=locals())

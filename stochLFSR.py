@@ -18,8 +18,6 @@ class lfsr:
 		self.restart()
 
 	def shift(self):
-		self.lfsrVal
-
 		self.defineXorOp()
 		zeroDetector = ~(self.lfsrVal[1:])
 		shiftIn = self.xorOp ^ zeroDetector.all()
@@ -28,6 +26,10 @@ class lfsr:
 
 		return self.lfsrVal.to01()
 
+	def next(self):
+		aux = self.shift()
+		return bool(int(aux[0]))
+	
 	def setSeed(self,seed_in):
 		'''
 		Sets LFSR's seed given in a string
@@ -92,9 +94,9 @@ class lfsr:
 			self.xorOp = v[a-24]^v[a-23]^v[a-22]^v[a-17]
 		elif(a==32):
 			self.xorOp = v[a-32]^v[a-31]^v[a-30]^v[a-10]
-
 		else:
 			self.xorOp = v[a-3]^v[a-2]
+			
 	def test(self):
 		# Test 4-bit LFSR
 		oracle = open("lfsr4b8bOracle.data",'r')

@@ -9,6 +9,7 @@ from bitarray import bitarray
 
 class stochSobel:
 	def __init__(self):
+		return
 
 	def mux2(self,i1,i2,s1):
 		'''Yields input 1 (i1) or i2 depending on switch 1 (s1)'''
@@ -29,17 +30,17 @@ class stochSobel:
 
 	def sobel(self,z1,z2,z3,z4,z6,z7,z8,z9,r0,r1,r2,r3,r4):
 		'''Implements stochastic sobel filter by Ranjbar et. al 2015'''
-		# Each term equal one of the input muxes
-		term1 = mux4(z2,z3,z3,z2,r0,r1)
-		term2 = mux4(z4,z7,z7,z8,r0,r1)
-		term3 = mux4(z6,z9,z9,z8,r2,r3)
-		term4 = mux4(z1,z2,z1,z4,r2,r3)
+		# Each term equals one of the input muxes
+		term1 = self.mux4(z2,z3,z3,z2,r0,r1)
+		term2 = self.mux4(z4,z7,z7,z8,r0,r1)
+		term3 = self.mux4(z6,z9,z9,z8,r2,r3)
+		term4 = self.mux4(z1,z2,z1,z4,r2,r3)
 
 		# Absolute value function done by XOR ports
 		abs1 = term1^term2
 		abs2 = term3^term4
 
 		# Output pixel, z5
-		return mux2(abs1,abs2,r4)
+		return self.mux2(abs1,abs2,r4)
 
 
