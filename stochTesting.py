@@ -11,7 +11,7 @@ print('''------------------------------------------------------------------
 Sucessfully loaded personal Sobel Filter implementation
 How to demo:
 Use functions 'detectAndShow(image)' or 'detectAndWritePGM(image)'
-Example: src,edges = detectAndShow('./images/aerial/school.pgm')
+Example: src,edges = rayDetectAndShow('./images/aerial/school.pgm')
 Result: photo printed on screen with edges detected,
 base image returned as 'src' and
 edge image returned into 'edges' variable as numpy matrix
@@ -21,6 +21,11 @@ edge image returned into 'edges' variable as numpy matrix
 # Test for LFSRs. Already checked, working.
 #lfsrAutoTest = lfsr()
 #lfsrAutoTest.test()
+
+ray.init()
+
+
+
 
 import code
 code.interact(local=locals())

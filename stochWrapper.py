@@ -5,10 +5,14 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 from bitarray import bitarray
 import random
+import ray
+import matrixDiv as md
 # Importing auxiliary modules
 
 from stochLFSR import *
 from stochSobel import *
+
+#ray.init()
 
 random.seed(20)
 r0 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
@@ -56,7 +60,7 @@ def sobelFilter(img=-1):
 		z7 = img[2][0]
 		z8 = img[2][1]
 		z9 = img[2][2]
-        
+
 		result = 0
 		for i in range(256):
 			s1 = SNG(z1,rng_z1.shift())
@@ -67,7 +71,7 @@ def sobelFilter(img=-1):
 			s7 = SNG(z7,rng_z7.shift())
 			s8 = SNG(z8,rng_z8.shift())
 			s9 = SNG(z9,rng_z9.shift())
-			
+
 			result = result+sSobel.sobel(s1,s2,s3,
 									s4,s6,s7,s8,s9,
 									r0.next(),
@@ -91,7 +95,6 @@ def createEdgeImage(img=-1):
 		print("Invalid 'img' dtype (not float64), returning empty matrix")
 		return np.array([0],np.float64)
 	else:
-		img = img[np.ix_(range(0,60),range(0,60))]
 		# Create images ignoring last row and column for simplicity in
 		# convolution operation
 		xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
@@ -131,6 +134,72 @@ def detectAndShow(imgpath=0):
 	#plt.title('Original'), plt.xticks([]), plt.yticks([])
 	#plt.subplot(1,2,2), plt.imshow(xy_img,cmap='gray')
 	#plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
+
+	# Plot only results
+	plt.imshow(xy_img,cmap='gray')
+	plt.show()
+
+	return img,xy_img
+
+@ray.remote
+def rayCreateEdgeImage(img=-1):
+	''' Applies Sobel filter on a NxM image "img" loaded via OpenCV (cv2 package) and
+	returns three (N-2)x(M-2) images with sobelX, sobelY and both filters applied.
+	2 rows and 2 columns removed to simplify boundary conditions.
+	Arguments:
+	- img: Region in Grayscale color scheme and np.float64 format
+	'''
+	if(type(img) != np.ndarray):
+		print("Invalid 'img' parameter, returning empty matrix")
+		return np.array([0],np.float64)
+	elif(img.dtype != np.float64):
+		print("Invalid 'img' dtype (not float64), returning empty matrix")
+		return np.array([0],np.float64)
+	else:
+
+		# Create images ignoring last row and column for simplicity in
+		# convolution operation
+		xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
+		for i in range(1,img.shape[0]-1):
+			for j in range(1,img.shape[1]-1):
+				# Get 3x3 submatrixes with np.ix_
+				# [i-1,i,i+1] = range(i-1,i+2)
+				# kept explicit for clarity
+				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
+				workingArea = img[ixgrid]
+				# Call the convolution function
+				Gxy = sobelFilter(workingArea)
+				xy_image[i-1][j-1] = Gxy
+
+		return xy_image
+
+def rayDetectAndShow(imgpath=0):
+	# Load image from path
+	# Basic validness check before operating
+	if(isinstance(imgpath,str)):
+		img = cv.imread(imgpath,cv.IMREAD_GRAYSCALE)
+		if(isinstance(img,type(None))):
+			print("Image could not be loaded")
+			return -1,-1
+	else:
+		print("Invalid image path")
+		return -1,-1
+
+	## Remove this line
+	#img = img[np.ix_(range(0,60),range(0,60))]
+	img_div = md.div8(img)
+	# This is where the processing begins
+	ray_ids = 8*[0]
+	for i in range(8):
+		ray_ids[i] = rayCreateEdgeImage.remote(np.float64(img_div[i]))
+
+	xy_img_part = ray.get(ray_ids)
+	first_half = np.hstack((xy_img_part[0],xy_img_part[1],xy_img_part[2],xy_img_part[3]))
+	second_half = np.hstack((xy_img_part[4],xy_img_part[5],xy_img_part[6],xy_img_part[7]))
+	xy_img = np.vstack((first_half,second_half))
+
+	# Convert back to Grayscale
+	xy_img = np.uint8(xy_img)
 
 	# Plot only results
 	plt.imshow(xy_img,cmap='gray')
