@@ -23,8 +23,7 @@ edge image returned into 'edges' variable as numpy matrix
 #lfsrAutoTest.test()
 
 ray.init()
-
-
+src,edges = rayDetectAndShow('./images/aerial/school.pgm')
 
 
 import code

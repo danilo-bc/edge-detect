@@ -8,7 +8,7 @@ from bitarray import bitarray
 class lfsr:
 	def __init__(self,lfsrLen = None,seed = None):
 		if(lfsrLen == None):
-			self.lfsrLen = 4
+			self.lfsrLen = 8
 		else:
 			self.lfsrLen=lfsrLen
 		if(seed == None):
@@ -29,7 +29,7 @@ class lfsr:
 	def next(self):
 		aux = self.shift()
 		return bool(int(aux[0]))
-	
+
 	def setSeed(self,seed_in):
 		'''
 		Sets LFSR's seed given in a string
@@ -96,7 +96,7 @@ class lfsr:
 			self.xorOp = v[a-32]^v[a-31]^v[a-30]^v[a-10]
 		else:
 			self.xorOp = v[a-3]^v[a-2]
-			
+
 	def test(self):
 		# Test 4-bit LFSR
 		oracle = open("lfsr4b8bOracle.data",'r')

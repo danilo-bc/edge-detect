@@ -14,22 +14,20 @@ from stochSobel import *
 
 #ray.init()
 
-random.seed(20)
-r0 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-r1 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-r2 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-r3 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-r4 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
+random.seed()
+lfsrSize = 32
+auxStr = '{:0'+str(lfsrSize)+'b}'
 
-rng_z1 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-rng_z2 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-rng_z3 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-rng_z4 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-rng_z6 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-rng_z7 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-rng_z8 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
-rng_z9 = lfsr(8,'{0:08b}'.format(random.getrandbits(8)))
+r = 5*[0]
+# 5 random streams for constants
+for i in range (5):
+	r[i] = lfsr(lfsrSize,auxStr.format(random.getrandbits(lfsrSize)))
+# 8 random streams for pixels
+rng_z = 8*[0]
+for i in range(8):
+	rng_z[i] = lfsr(lfsrSize,auxStr.format(random.getrandbits(lfsrSize)))
 
+del auxStr
 
 sSobel = stochSobel()
 
@@ -51,34 +49,36 @@ def sobelFilter(img=-1):
 		print("Invalid 'img' dtype (not float64), returning default (0, 0)")
 		return 0, 0
 	else:
-		z1 = img[0][0]
-		z2 = img[0][1]
-		z3 = img[0][2]
-		z4 = img[1][0]
-		#z5 suppressed
-		z6 = img[1][2]
-		z7 = img[2][0]
-		z8 = img[2][1]
-		z9 = img[2][2]
+		z = 8*[0]
+		z[0] = img[0][0]
+		z[1] = img[0][1]
+		z[2] = img[0][2]
+		z[3] = img[1][0]
+		#no middle pixel
+		z[4] = img[1][2]
+		z[5] = img[2][0]
+		z[6] = img[2][1]
+		z[7] = img[2][2]
 
 		result = 0
 		for i in range(256):
-			s1 = SNG(z1,rng_z1.shift())
-			s2 = SNG(z2,rng_z2.shift())
-			s3 = SNG(z3,rng_z3.shift())
-			s4 = SNG(z4,rng_z4.shift())
-			s6 = SNG(z6,rng_z6.shift())
-			s7 = SNG(z7,rng_z7.shift())
-			s8 = SNG(z8,rng_z8.shift())
-			s9 = SNG(z9,rng_z9.shift())
+			s = 8*[0]
+			s[0] = SNG(z[0],rng_z[0].shift()[-8:])
+			s[1] = SNG(z[1],rng_z[1].shift()[-8:])
+			s[2] = SNG(z[2],rng_z[2].shift()[-8:])
+			s[3] = SNG(z[3],rng_z[3].shift()[-8:])
+			s[4] = SNG(z[4],rng_z[4].shift()[-8:])
+			s[5] = SNG(z[5],rng_z[5].shift()[-8:])
+			s[6] = SNG(z[6],rng_z[6].shift()[-8:])
+			s[7] = SNG(z[7],rng_z[7].shift()[-8:])
 
-			result = result+sSobel.sobel(s1,s2,s3,
-									s4,s6,s7,s8,s9,
-									r0.next(),
-									r1.next(),
-									r2.next(),
-									r3.next(),
-									r4.next())
+			result = result+sSobel.sobel(s[0],s[1],s[2],
+									s[3],s[4],s[5],s[6],s[7],
+									r[0].next(),
+									r[1].next(),
+									r[2].next(),
+									r[3].next(),
+									r[4].next())
 		return result
 
 def createEdgeImage(img=-1):
@@ -122,7 +122,6 @@ def detectAndShow(imgpath=0):
 	else:
 		print("Invalid image path")
 		return -1,-1
-
 	# This is where the processing begins
 	xy_img = createEdgeImage(np.array(img,np.float64))
 
@@ -186,7 +185,7 @@ def rayDetectAndShow(imgpath=0):
 		return -1,-1
 
 	## Remove this line
-	#img = img[np.ix_(range(0,60),range(0,60))]
+	img = img[np.ix_(range(150,250),range(150,250))]
 	img_div = md.div8(img)
 	# This is where the processing begins
 	ray_ids = 8*[0]
