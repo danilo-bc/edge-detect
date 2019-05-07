@@ -31,7 +31,7 @@ class stochSobel:
 	def sobel(self,z1,z2,z3,z4,z6,z7,z8,z9,r0,r1,r2,r3,r4):
 		'''Implements stochastic sobel filter by Ranjbar et. al 2015'''
 		# Each term equals one of the input muxes
-		term1 = self.mux4(z2,z3,z3,z2,r0,r1)
+		term1 = self.mux4(z2,z3,z3,z6,r0,r1) #<- different from article
 		term2 = self.mux4(z4,z7,z7,z8,r0,r1)
 		term3 = self.mux4(z6,z9,z9,z8,r2,r3)
 		term4 = self.mux4(z1,z2,z1,z4,r2,r3)
