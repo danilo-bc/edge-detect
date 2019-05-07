@@ -38,7 +38,7 @@ class lfsr:
 		self.seed = seed_in
 
 	def reset(self):
-		self.lfsrVal = bitarray(lfsrLen*'0')
+		self.lfsrVal = bitarray(self.lfsrLen*'0')
 
 	def restart(self):
 		self.lfsrVal = bitarray(self.seed)
