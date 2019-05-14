@@ -34,7 +34,7 @@ lfsr_seeds = [0,
 			  888]
 
 
-def sobelFilter(img=-1,r=[],rng_z=[]):
+def sobelFilter(img=-1,r=[],rng_z_1=[],rng_z_2=[]):
 	'''Function that calculates Gx and Gy of a 3x3 img in numpy matrix form
 	Arguments:
 	- img: 3x3 region to process Gx and Gy
@@ -49,57 +49,95 @@ def sobelFilter(img=-1,r=[],rng_z=[]):
 		print("Invalid 'img' dtype (not float64), returning default (0, 0)")
 		return 0, 0
 	else:
-		z = 8*[0]
+		global half
+		# z refers to each pixel in the 3x3 region
+		z = 9*[0]
+		# upper row
 		z[0] = img[0][0]
 		z[1] = img[0][1]
 		z[2] = img[0][2]
+
+		# middle row
 		z[3] = img[1][0]
 		#no middle pixel
-		z[4] = img[1][2]
-		z[5] = img[2][0]
-		z[6] = img[2][1]
-		z[7] = img[2][2]
+		z[4] = 0
+		z[5] = img[1][2]
+
+		# lower row
+		z[6] = img[2][0]
+		z[7] = img[2][1]
+		z[8] = img[2][2]
 
 		result = 0
 		for i in range(255):
-			s = 8*[0]
-			rng_z[0] = lfsr.shift(rng_z[0])
-			rng_z[1] = lfsr.shift(rng_z[1])
-			rng_z[2] = lfsr.shift(rng_z[2])
-			rng_z[3] = lfsr.shift(rng_z[3])
-			rng_z[4] = lfsr.shift(rng_z[4])
-			rng_z[5] = lfsr.shift(rng_z[5])
-			rng_z[6] = lfsr.shift(rng_z[6])
-			rng_z[7] = lfsr.shift(rng_z[7])
+			# Variables for storing next bit of
+			# respective stochastic number "s[pixel]"
+			s_1 = 8*[0]
+			s_2 = 8*[0]
 
-			s[0] = z[0]>int(rng_z[0].to01()[-8:],2)
-			s[1] = z[1]>int(rng_z[1].to01()[-8:],2)
-			s[2] = z[2]>int(rng_z[2].to01()[-8:],2)
-			s[3] = z[3]>int(rng_z[3].to01()[-8:],2)
-			s[4] = z[4]>int(rng_z[4].to01()[-8:],2)
-			s[5] = z[5]>int(rng_z[5].to01()[-8:],2)
-			s[6] = z[6]>int(rng_z[6].to01()[-8:],2)
-			s[7] = z[7]>int(rng_z[7].to01()[-8:],2)
+			# Shift all LFSR for inputs 1
+			rng_z_1[0] = lfsr.shift(rng_z_1[0])
+			rng_z_1[1] = lfsr.shift(rng_z_1[1])
+			rng_z_1[2] = lfsr.shift(rng_z_1[2])
+			rng_z_1[3] = lfsr.shift(rng_z_1[3])
+			rng_z_1[4] = lfsr.shift(rng_z_1[4])
+			rng_z_1[5] = lfsr.shift(rng_z_1[5])
+			rng_z_1[6] = lfsr.shift(rng_z_1[6])
+			rng_z_1[7] = lfsr.shift(rng_z_1[7])
 
+			# vert/horizontal Sobel
+			rng_z_2[0] = lfsr.shift(rng_z_2[0])
+			rng_z_2[1] = lfsr.shift(rng_z_2[1])
+			rng_z_2[2] = lfsr.shift(rng_z_2[2])
+			rng_z_2[3] = lfsr.shift(rng_z_2[3])
+
+			# Stochastic Number Generation of all inputs
+			s_1[0] = z[0]>int(rng_z_1[0].to01()[-8:],2)
+			s_1[1] = z[1]>int(rng_z_1[1].to01()[-8:],2)
+			s_1[2] = z[2]>int(rng_z_1[2].to01()[-8:],2)
+			s_1[3] = z[3]>int(rng_z_1[3].to01()[-8:],2)
+			#unused middle pixel
+			s_1[4] = z[5]>int(rng_z_1[4].to01()[-8:],2)
+			s_1[5] = z[6]>int(rng_z_1[5].to01()[-8:],2)
+			s_1[6] = z[7]>int(rng_z_1[6].to01()[-8:],2)
+			s_1[7] = z[8]>int(rng_z_1[7].to01()[-8:],2)
+
+			# independent copies of certain pixels
+			s_2[0] = z[1]>int(rng_z_2[0].to01()[-8:],2)
+			s_2[1] = z[3]>int(rng_z_2[1].to01()[-8:],2)
+			s_2[2] = z[5]>int(rng_z_2[2].to01()[-8:],2)
+			s_2[3] = z[7]>int(rng_z_2[3].to01()[-8:],2)
+
+			# Shift all LFSR for constants
 			r0 = lfsr.shift(r[0])
 			r1 = lfsr.shift(r[1])
 			r2 = lfsr.shift(r[2])
 			r3 = lfsr.shift(r[3])
 			r4 = lfsr.shift(r[4])
-
+			# Stochastic Number Generation of all constants (0.5 for all)
 			r0 = half>int(r[0].to01()[-8:],2)
 			r1 = half>int(r[1].to01()[-8:],2)
 			r2 = half>int(r[2].to01()[-8:],2)
 			r3 = half>int(r[3].to01()[-8:],2)
 			r4 = half>int(r[4].to01()[-8:],2)
 
-			result = result+stochSobel.sobel(s[0],s[1],s[2],
-									s[3],s[4],s[5],s[6],s[7],
-									r0,
-									r1,
-									r2,
-									r3,
-									r4)
+			result = result+stochSobel.sobel(s_1[0],
+											 s_1[1],
+											 s_1[2],
+											 s_1[3],
+											 s_1[4],
+											 s_1[5],
+											 s_1[6],
+											 s_1[7],
+											 s_2[0],
+											 s_2[1],
+											 s_2[2],
+											 s_2[3],
+											 r0,
+											 r1,
+											 r2,
+											 r3,
+											 r4)
 		return result
 
 @ray.remote
@@ -121,15 +159,28 @@ def rayCreateEdgeImage(img=-1):
 		global lfsr_seeds
 		global auxStr
 		r = 5*[0]
+		root_lfsr = bitarray(lfsrSize*'0')
 		# 5 random streams for constants
 		for i in range (5):
+			r[i] = lfsr.shift(root_lfsr)
 			#r[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
-			r[i] = bitarray(auxStr.format(lfsr_seeds[8]))
+			#r[i] = bitarray(auxStr.format(lfsr_seeds[0]))
+
 		# 8 random streams for pixels
-		rng_z = 8*[0]
+		# 4 random streams for copies of
+		# - z2, z4, z6 and z8 for vertical/horizontal
+		# - z1, z3, z7 and z9 for diagonal sobel
+		rng_z_1 = 8*[0]
+		rng_z_2 = 4*[0]
 		for i in range(8):
-			#rng_z[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
-			rng_z[i] = bitarray(auxStr.format(lfsr_seeds[0]))
+			rng_z_1[i] = lfsr.shift(root_lfsr)
+			#rng_z_1[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
+			#rng_z_1[i] = bitarray(auxStr.format(lfsr_seeds[0]))
+		for i in range(4):
+			rng_z_2[i] = lfsr.shift(root_lfsr)
+			#rng_z_2[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
+			#rng_z_2[i] = bitarray(auxStr.format(lfsr_seeds[0]))
+
 
 		# Create images ignoring last row and column for simplicity in
 		# convolution operation
@@ -142,7 +193,7 @@ def rayCreateEdgeImage(img=-1):
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
 				# Call the convolution function
-				Gxy = sobelFilter(workingArea,r,rng_z)
+				Gxy = sobelFilter(workingArea,r,rng_z_1,rng_z_2)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
@@ -195,6 +246,28 @@ def createEdgeImage(img=-1):
 		print("Invalid 'img' dtype (not float64), returning empty matrix")
 		return np.array([0],np.float64)
 	else:
+		global lfsrSize
+		global lfsr_seeds
+		global auxStr
+		r = 5*[0]
+		root_lfsr = bitarray(lfsrSize*'0')
+		# 5 random streams for constants
+		for i in range (5):
+			r[i] = lfsr.shift(root_lfsr)
+
+		# 8 random streams for pixels
+		# 4 random streams for copies of
+		# - z2, z4, z6 and z8 for vertical/horizontal
+		# - z1, z3, z7 and z9 for diagonal sobel
+		rng_z_1 = 8*[0]
+		rng_z_2 = 4*[0]
+		for i in range(8):
+			rng_z_1[i] = lfsr.shift(root_lfsr)
+
+		for i in range(4):
+			rng_z_2[i] = lfsr.shift(root_lfsr)
+		## Remove this line
+		img = img[np.ix_(range(150,250),range(150,250))]
 		# Create images ignoring last row and column for simplicity in
 		# convolution operation
 		xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
@@ -206,7 +279,7 @@ def createEdgeImage(img=-1):
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
 				# Call the convolution function
-				Gxy = sobelFilter(workingArea)
+				Gxy = sobelFilter(workingArea,r,rng_z_1,rng_z_2)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
