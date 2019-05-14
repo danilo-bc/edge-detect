@@ -2,7 +2,6 @@
 @file sobel_demo.py
 @brief Sample code using Sobel and/or Scharr OpenCV functions to make a simple Edge Detector
 """
-import sys
 import cv2 as cv
 import matplotlib.pyplot as plt
 
