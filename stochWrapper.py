@@ -14,11 +14,11 @@ import stochSobel
 
 #ray.init()
 
+# "Environment constants"
 random.seed(20)
 lfsrSize = 16
 half = 127
 auxStr = '{:0'+str(lfsrSize)+'b}'
-
 lfsr_seeds = [0,
 			  15,
 			  30,
@@ -34,20 +34,7 @@ lfsr_seeds = [0,
 			  888]
 
 
-r = 5*[0]
-# 5 random streams for constants
-for i in range (5):
-	#r[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
-	r[i] = bitarray(auxStr.format(lfsr_seeds[8]))
-# 8 random streams for pixels
-rng_z = 8*[0]
-for i in range(8):
-	#rng_z[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
-	rng_z[i] = bitarray(auxStr.format(lfsr_seeds[0]))
-
-del auxStr
-
-def sobelFilter(img=-1):
+def sobelFilter(img=-1,r=[],rng_z=[]):
 	'''Function that calculates Gx and Gy of a 3x3 img in numpy matrix form
 	Arguments:
 	- img: 3x3 region to process Gx and Gy
@@ -74,7 +61,7 @@ def sobelFilter(img=-1):
 		z[7] = img[2][2]
 
 		result = 0
-		for i in range(256):
+		for i in range(255):
 			s = 8*[0]
 			rng_z[0] = lfsr.shift(rng_z[0])
 			rng_z[1] = lfsr.shift(rng_z[1])
@@ -130,6 +117,19 @@ def rayCreateEdgeImage(img=-1):
 		print("Invalid 'img' dtype (not float64), returning empty matrix")
 		return np.array([0],np.float64)
 	else:
+		global lfsrSize
+		global lfsr_seeds
+		global auxStr
+		r = 5*[0]
+		# 5 random streams for constants
+		for i in range (5):
+			#r[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
+			r[i] = bitarray(auxStr.format(lfsr_seeds[8]))
+		# 8 random streams for pixels
+		rng_z = 8*[0]
+		for i in range(8):
+			#rng_z[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
+			rng_z[i] = bitarray(auxStr.format(lfsr_seeds[0]))
 
 		# Create images ignoring last row and column for simplicity in
 		# convolution operation
@@ -142,7 +142,7 @@ def rayCreateEdgeImage(img=-1):
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
 				# Call the convolution function
-				Gxy = sobelFilter(workingArea)
+				Gxy = sobelFilter(workingArea,r,rng_z)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
@@ -160,7 +160,7 @@ def rayDetectAndShow(imgpath=0):
 		return -1,-1
 
 	## Remove this line
-	#img = img[np.ix_(range(150,250),range(150,250))]
+	img = img[np.ix_(range(150,250),range(150,250))]
 	img_div = md.div8(img)
 	# This is where the processing begins
 	ray_ids = 8*[0]
