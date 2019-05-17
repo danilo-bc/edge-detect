@@ -15,6 +15,32 @@ sKernelY=np.array([[-1,-2,-1],
 						[0,0,0],
 						[1,2,1]],np.float64)
 
+def altSobelFilter(img=-1):
+	'''Alternate function that calculates Gx and Gy of a 3x3
+	img in numpy matrix form to compare with Stochastic version
+	Arguments:
+	- img: 3x3 region to process Gx and Gy
+	'''
+	if(type(img) != np.ndarray):
+		print("Invalid 'img' parameter, returning default (0, 0)")
+		return 0, 0
+	elif(img.shape!=(3,3)):
+		print("Invalid 'img' shape (not 3x3), returning default (0, 0)")
+		return 0, 0
+	elif(img.dtype != np.float64):
+		print("Invalid 'img' dtype (not float64), returning default (0, 0)")
+		return 0, 0
+	else:
+		Gx = np.float64(0.0)
+		Gy = np.float64(0.0)
+
+		# Do the convolution in one of NumPy's way
+		Gx = np.sum(sKernelX*img)
+		Gy = np.sum(sKernelY*img)
+
+
+		return (np.abs(Gx)+np.abs(Gy))/8.0
+
 def sobelFilter(img=-1):
 	'''Function that calculates Gx and Gy of a 3x3 img in numpy matrix form
 	Arguments:
