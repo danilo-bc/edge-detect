@@ -11,7 +11,7 @@ module MReSC_wrapper_Sobel3x3_X_8b_g2( //handles stochastic/binary conversion fo
 	input [7:0] x_5_bin, //binary value of input 5
 	input [7:0] x_6_bin, //binary value of input 6
 	input start, //signal to start counting
-	output reg done, //signal that a number has been computed 
+	output reg done, //signal that a number has been computed
 	output reg [7:0] z_bin, //binary value of output
 
 	input clk,
@@ -103,7 +103,7 @@ module MReSC_wrapper_Sobel3x3_X_8b_g2( //handles stochastic/binary conversion fo
 	//RNGs for binary->stochastic conversion
 	wire [7:0] randx_1_0;
 	LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2 rand_gen_x_1_0 (
-		.seed (8'd0),
+		.seed (8'd5),
 		.data (randx_1_0),
 		.enable (running),
 		.restart (init),
@@ -114,7 +114,7 @@ module MReSC_wrapper_Sobel3x3_X_8b_g2( //handles stochastic/binary conversion fo
 
 	wire [7:0] randx_2_0;
 	LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2 rand_gen_x_2_0 (
-		.seed (8'd0),
+		.seed (8'd11),
 		.data (randx_2_0),
 		.enable (running),
 		.restart (init),
@@ -125,7 +125,7 @@ module MReSC_wrapper_Sobel3x3_X_8b_g2( //handles stochastic/binary conversion fo
 
 	wire [7:0] randx_3_0;
 	LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2 rand_gen_x_3_0 (
-		.seed (8'd0),
+		.seed (8'd17),
 		.data (randx_3_0),
 		.enable (running),
 		.restart (init),
@@ -136,7 +136,7 @@ module MReSC_wrapper_Sobel3x3_X_8b_g2( //handles stochastic/binary conversion fo
 
 	wire [7:0] randx_4_0;
 	LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2 rand_gen_x_4_0 (
-		.seed (8'd0),
+		.seed (8'd23),
 		.data (randx_4_0),
 		.enable (running),
 		.restart (init),
@@ -147,7 +147,7 @@ module MReSC_wrapper_Sobel3x3_X_8b_g2( //handles stochastic/binary conversion fo
 
 	wire [7:0] randx_5_0;
 	LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2 rand_gen_x_5_0 (
-		.seed (8'd0),
+		.seed (8'd29),
 		.data (randx_5_0),
 		.enable (running),
 		.restart (init),
@@ -158,7 +158,7 @@ module MReSC_wrapper_Sobel3x3_X_8b_g2( //handles stochastic/binary conversion fo
 
 	wire [7:0] randx_6_0;
 	LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2 rand_gen_x_6_0 (
-		.seed (8'd0),
+		.seed (8'd41),
 		.data (randx_6_0),
 		.enable (running),
 		.restart (init),
