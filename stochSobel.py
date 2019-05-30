@@ -22,22 +22,22 @@ def mux4(i1,i2,i3,i4,s1,s2):
 		return i4
 
 def altSobel(z1_1,
-		  z2_1,
-		  z3_1,
-		  z4_1,
-		  z6_1,
-		  z7_1,
-		  z8_1,
-		  z9_1,
-		  z1_2,
-		  z2_2,
-		  z3_2,
-		  z4_2,
-		  z6_2,
-		  z7_2,
-		  z8_2,
-		  z9_2,
-		  r0,r1,r2,r3,r4):
+			 z2_1,
+			 z3_1,
+			 z4_1,
+			 z6_1,
+			 z7_1,
+			 z8_1,
+			 z9_1,
+			 z1_2,
+			 z2_2,
+			 z3_2,
+			 z4_2,
+			 z6_2,
+			 z7_2,
+			 z8_2,
+			 z9_2,
+			 r0,r1,r2,r3,r4):
 	'''Implements stochastic sobel filter based on Ranjbar et. al 2015
 	All inputs uncorrelated'''
 	# Different from the article because it implements diagonal filters
