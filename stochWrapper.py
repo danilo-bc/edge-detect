@@ -564,3 +564,40 @@ def detectAndShow(imgpath=0):
 
 	return img,xy_img
 
+def importHex(filename=None):
+	'''Reads a txt file containing a NumPy image in uint8
+	format saved in pairs of hexadecimal characters.
+	Returns the image as a NumPy uint8 array.
+	'''
+	if(not filename):
+		print("Invalid hex filename")
+		return None
+	elif(isinstance(type(filename),str)):
+		print("Invalid hex filename")
+		return None
+	elif(filename[-3:]!='txt'):
+		print("Invalid hex filename")
+		return None
+	else:
+		#Load images stored in hex txt files
+		input_img = open(filename)
+
+		#Put the contents into list of strings
+		input_str = input_img.readlines()
+
+		#Close file after reading
+		input_img.close()
+
+		#Prepare matrices
+		decoded_mat = []
+
+		#Take away trailing new line('\n') and convert to
+		#List of byte arrays
+		for i in range(len(input_str)):
+			input_str[i] = input_str[i].rstrip('\n')
+			decoded_mat.append(bytearray.fromhex(input_str[i]))
+
+		#Convert bytes into unsigned 8-bit integers
+		#This is one of the compatible image formats
+		decoded_mat = np.array(decoded_mat,np.uint8)
+		return decoded_mat
