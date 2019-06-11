@@ -564,6 +564,16 @@ def detectAndShow(imgpath=0):
 
 	return img,xy_img
 
+def saveToHex(filename=None,numpyarray=np.zeros(1)):
+	'''Saves image in memory in NumPy's uint8 format
+	into a text file with two hexadecimal characters
+	txt format is preferrable.
+	'''
+	if(not filename):
+		print("Invalid filename")
+		return 0
+	np.savetxt(filename,numpyarray,"%.2x")
+
 def importHex(filename=None):
 	'''Reads a txt file containing a NumPy image in uint8
 	format saved in pairs of hexadecimal characters.

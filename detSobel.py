@@ -169,7 +169,7 @@ def detectAndWritePGM(imgpath=0):
 
 	return img,xy_img
 
-def saveTo2ByteHex(filename=None,numpyarray=np.zeros(1)):
+def saveToHex(filename=None,numpyarray=np.zeros(1)):
 	'''Saves image in memory in NumPy's uint8 format
 	into a text file with two hexadecimal characters
 	txt format is preferrable.
