@@ -15,33 +15,7 @@ sKernelY=np.array([[-1,-2,-1],
 						[0,0,0],
 						[1,2,1]],np.float64)
 
-def altSobelFilter(img=-1):
-	'''Alternate function that calculates Gx and Gy of a 3x3
-	img in numpy matrix form to compare with Stochastic version
-	Arguments:
-	- img: 3x3 region to process Gx and Gy
-	'''
-	if(type(img) != np.ndarray):
-		print("Invalid 'img' parameter, returning default (0, 0)")
-		return 0, 0
-	elif(img.shape!=(3,3)):
-		print("Invalid 'img' shape (not 3x3), returning default (0, 0)")
-		return 0, 0
-	elif(img.dtype != np.float64):
-		print("Invalid 'img' dtype (not float64), returning default (0, 0)")
-		return 0, 0
-	else:
-		Gx = np.float64(0.0)
-		Gy = np.float64(0.0)
-
-		# Do the convolution in one of NumPy's way
-		Gx = np.sum(sKernelX*img)
-		Gy = np.sum(sKernelY*img)
-
-
-		return (np.abs(Gx)+np.abs(Gy))/8.0
-
-def sobelFilter(img=-1):
+def opencvSobelFilter(img=-1):
 	'''Function that calculates Gx and Gy of a 3x3 img in numpy matrix form
 	Arguments:
 	- img: 3x3 region to process Gx and Gy
@@ -65,7 +39,7 @@ def sobelFilter(img=-1):
 
 		return Gx,Gy
 
-def createEdgeImage(img=-1):
+def opencvCreateEdgeImage(img=-1):
 	''' Applies Sobel filter on a NxM image "img" loaded via OpenCV (cv2 package) and
 	returns three (N-2)x(M-2) images with sobelX, sobelY and both filters applied.
 	2 rows and 2 columns removed to simplify boundary conditions.
@@ -108,6 +82,93 @@ def createEdgeImage(img=-1):
 
 		# Sum halves to keep results in [0-255]
 		xy_image = 0.5*x_image+0.5*y_image
+		return xy_image
+
+def opencvDetectAndShow(imgpath=0):
+	# Load image from path
+	# Basic validness check before operating
+	if(isinstance(imgpath,str)):
+		img = cv.imread(imgpath,cv.IMREAD_GRAYSCALE)
+		if(isinstance(img,type(None))):
+			print("Image could not be loaded")
+			return -1,-1
+	else:
+		print("Invalid image path")
+		return -1,-1
+
+	# This is where the processing begins
+	xy_img = opencvCreateEdgeImage(np.array(img,np.float64))
+
+	# Convert back to Grayscale
+	xy_img = np.uint8(xy_img)
+
+	# Plot side by side for comparison
+	#plt.subplot(1,2,1), plt.imshow(img,cmap='gray')
+	#plt.title('Original'), plt.xticks([]), plt.yticks([])
+	#plt.subplot(1,2,2), plt.imshow(xy_img,cmap='gray')
+	#plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
+
+	# Plot only results
+	plt.imshow(xy_img,cmap='gray')
+	plt.show()
+
+	return img,xy_img
+
+def sobelFilter(img=-1):
+	'''Alternate function that calculates Gx and Gy of a 3x3
+	img in numpy matrix form to compare with Stochastic version
+	Arguments:
+	- img: 3x3 region to process Gx and Gy
+	'''
+	if(type(img) != np.ndarray):
+		print("Invalid 'img' parameter, returning default (0, 0)")
+		return 0, 0
+	elif(img.shape!=(3,3)):
+		print("Invalid 'img' shape (not 3x3), returning default (0, 0)")
+		return 0, 0
+	elif(img.dtype != np.float64):
+		print("Invalid 'img' dtype (not float64), returning default (0, 0)")
+		return 0, 0
+	else:
+		Gx = np.float64(0.0)
+		Gy = np.float64(0.0)
+
+		# Do the convolution in one of NumPy's way
+		Gx = np.sum(sKernelX*img)
+		Gy = np.sum(sKernelY*img)
+
+		return (np.abs(Gx)+np.abs(Gy))/8.0
+
+def createEdgeImage(img=-1):
+	''' Applies Sobel filter on a NxM image "img" loaded via OpenCV (cv2 package) and
+	returns three (N-2)x(M-2) images with sobelX, sobelY and both filters applied.
+	2 rows and 2 columns removed to simplify boundary conditions.
+	Arguments:
+	- img: Region in Grayscale color scheme and np.float64 format
+	'''
+	if(type(img) != np.ndarray):
+		print("Invalid 'img' parameter, returning empty matrix")
+		return np.array([0],np.float64)
+	elif(img.dtype != np.float64):
+		print("Invalid 'img' dtype (not float64), returning empty matrix")
+		return np.array([0],np.float64)
+	else:
+		# Create images ignoring last row and column for simplicity in
+		# convolution operation
+
+		xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
+		for i in range(1,img.shape[0]-1):
+			for j in range(1,img.shape[1]-1):
+				# Reset Gx & Gy for each pixel
+				Gx, Gy = 0, 0
+				# Get 3x3 submatrixes with np.ix_
+				# [i-1,i,i+1] = range(i-1,i+2)
+				# kept explicit for clarity
+				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
+				workingArea = img[ixgrid]
+				# Call the convolution function
+				xy_image[i-1][j-1] = sobelFilter(workingArea)
+
 		return xy_image
 
 def detectAndShow(imgpath=0):
@@ -169,7 +230,7 @@ def detectAndWritePGM(imgpath=0):
 
 	return img,xy_img
 
-def saveToHex(filename=None,numpyarray=np.zeros(1)):
+def saveHex(filename=None,numpyarray=np.zeros(1)):
 	'''Saves image in memory in NumPy's uint8 format
 	into a text file with two hexadecimal characters
 	txt format is preferrable.
@@ -179,7 +240,7 @@ def saveToHex(filename=None,numpyarray=np.zeros(1)):
 		return 0
 	np.savetxt(filename,numpyarray,"%.2x")
 
-def importHex(filename=None):
+def loadHex(filename=None):
 	'''Reads a txt file containing a NumPy image in uint8
 	format saved in pairs of hexadecimal characters.
 	Returns the image as a NumPy uint8 array.
@@ -217,7 +278,7 @@ def importHex(filename=None):
 		decoded_mat = np.array(decoded_mat,np.uint8)
 		return decoded_mat
 
-def showHexImg(filename=None):
+def showHex(filename=None):
 	'''Reads a txt file containing a NumPy image in uint8
 	format saved in pairs of hexadecimal characters.
 	Shows the image on the screen and returns the

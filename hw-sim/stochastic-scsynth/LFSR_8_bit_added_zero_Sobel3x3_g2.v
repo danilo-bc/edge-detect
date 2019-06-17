@@ -3,7 +3,7 @@
  * the MIT license. More information can be found at
  * https://github.com/arminalaghi/scsynth/
  */
-module LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2(//Linear feedback shift register
+module LFSR_8_bit_added_zero_Sobel3x3_g2(//Linear feedback shift register
 	input [7:0] seed, //Initial value
 	output [7:0] data, //Current value
 	input enable, //When on, new state every clock cycle

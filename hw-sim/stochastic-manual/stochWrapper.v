@@ -116,32 +116,32 @@ module stochWrapper( //handles stochastic/binary conversion for ReSC
 	stochLFSR8bit rand_gen_8 (.seed (8'b00111100),.data (rand8),.enable (running),.restart (init),.clk (clk),.reset (reset));
 
 	//SNG using simple comparator
-	assign r0_stoch = randr0[7:0] < 8'd127;
-	assign r1_stoch = randr1[7:0] < 8'd127;
-	assign r2_stoch = randr2[7:0] < 8'd127;
-	assign r3_stoch = randr3[7:0] < 8'd127;
-	assign r4_stoch = randr4[7:0] < 8'd127;
+	assign r0_stoch = 8'd127 > randr0[7:0];
+	assign r1_stoch = 8'd127 > randr1[7:0];
+	assign r2_stoch = 8'd127 > randr2[7:0];
+	assign r3_stoch = 8'd127 > randr3[7:0];
+	assign r4_stoch = 8'd127 > randr4[7:0];
 	//Mux1
-	assign z1_1_stoch = rand1[7:0] < pixel_1_bin;
-	assign z2_1_stoch = rand2[7:0] < pixel_2_bin;
-	assign z2_2_stoch = rand3[7:0] < pixel_2_bin;
-	assign z3_1_stoch = rand4[7:0] < pixel_3_bin;
+	assign z1_1_stoch = pixel_1_bin > rand1[7:0];
+	assign z2_1_stoch = pixel_2_bin > rand2[7:0];
+	assign z2_2_stoch = pixel_2_bin > rand3[7:0];
+	assign z3_1_stoch = pixel_3_bin > rand4[7:0];
 	//Mux2
-	assign z7_1_stoch = rand1[7:0] < pixel_7_bin;
-	assign z8_1_stoch = rand2[7:0] < pixel_8_bin;
-	assign z8_2_stoch = rand3[7:0] < pixel_8_bin;
-	assign z9_1_stoch = rand4[7:0] < pixel_9_bin;
+	assign z7_1_stoch = pixel_7_bin > rand1[7:0];
+	assign z8_1_stoch = pixel_8_bin > rand2[7:0];
+	assign z8_2_stoch = pixel_8_bin > rand3[7:0];
+	assign z9_1_stoch = pixel_9_bin > rand4[7:0];
 
 	//Mux3
-	assign z1_2_stoch = rand5[7:0] < pixel_1_bin;
-	assign z4_1_stoch = rand6[7:0] < pixel_4_bin;
-	assign z4_2_stoch = rand7[7:0] < pixel_4_bin;
-	assign z7_2_stoch = rand8[7:0] < pixel_7_bin;
+	assign z1_2_stoch = pixel_1_bin > rand5[7:0];
+	assign z4_1_stoch = pixel_4_bin > rand6[7:0];
+	assign z4_2_stoch = pixel_4_bin > rand7[7:0];
+	assign z7_2_stoch = pixel_7_bin > rand8[7:0];
 	//Mux4
-	assign z3_2_stoch = rand5[7:0] < pixel_3_bin;
-	assign z6_1_stoch = rand6[7:0] < pixel_6_bin;
-	assign z6_2_stoch = rand7[7:0] < pixel_6_bin;
-	assign z9_2_stoch = rand8[7:0] < pixel_9_bin;
+	assign z3_2_stoch = pixel_3_bin > rand5[7:0];
+	assign z6_1_stoch = pixel_6_bin > rand6[7:0];
+	assign z6_2_stoch = pixel_6_bin > rand7[7:0];
+	assign z9_2_stoch = pixel_9_bin > rand8[7:0];
 
 	stochFunction SF (
 		.z1_1 (z1_1_stoch),
@@ -178,33 +178,71 @@ module stochWrapper( //handles stochastic/binary conversion for ReSC
 	//2: running
 	reg [1:0] cs; //current FSM state
 	reg [1:0] ns; //next FSM state
-	assign init = cs == 1;
-	assign running = cs == 2;
+	parameter IDLES = 2'b00;
+	parameter INITS = 2'b01;
+	parameter RUNNINGS = 2'b10;
+	assign init = (cs==INITS);
+	assign running = (cs==RUNNINGS);
 
+//current state -> next state
 	always @(posedge clk or posedge reset) begin
-		if (reset) cs <= 0;
+		if (reset) begin
+			cs <=0;
+		end
 		else begin
-			cs <= ns;
+			cs <=ns;
+		end
+	end
+
+//Output logic
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			count <= 0;
+			z_bin <= 0;
+			done <= 0;
+		end
+		else if (init) begin
+			count <= 0;
+			z_bin <= 0;
+			done <= 0;
+		end
+		else begin
 			if (running) begin
-				if (count == neg_one) done <= 1;
+				done <= (1 & (count==neg_one));
 				count <= count + 1;
 				z_bin <= z_bin + z_stoch;
 			end
 		end
 	end
-
+// Next-state logic
 	always @(*) begin
 		case (cs)
-			0: if (start) ns = 1; else ns = 0;
-			1: if (start) ns = 1; else ns = 2;
-			2: if (done) ns = 0; else ns = 2;
-			default ns = 0;
+			IDLES: begin
+					if (start) begin
+						ns = INITS;
+					end 
+					else begin
+						ns = IDLES;
+					end
+			end
+			INITS: begin 
+					if (start) begin 
+						ns = INITS;
+					end 
+					else begin
+						ns = RUNNINGS;
+					end
+			end
+			RUNNINGS: begin
+					if (done) begin 
+						ns = IDLES;
+					end
+					else begin
+						ns = RUNNINGS;
+					end
+			end
+			default ns = IDLES;
 		endcase
 	end
 
-	always @(posedge init) begin
-		count <= 0;
-		z_bin <= 0;
-		done <= 0;
-	end
 endmodule

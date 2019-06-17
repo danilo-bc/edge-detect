@@ -3,9 +3,9 @@
  * the MIT license. More information can be found at
  * https://github.com/arminalaghi/scsynth/
  */
-module LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2(//Linear feedback shift register
-	input [7:0] seed, //Initial value
-	output [7:0] data, //Current value
+module stochLFSR16bit(//Linear feedback shift register
+	input [15:0] seed, //Initial value
+	output [15:0] data, //Current value
 	input enable, //When on, new state every clock cycle
 	input restart, //Restart the LFSR at its seed state
 
@@ -13,21 +13,21 @@ module LFSR_8_bit_added_zero_Sobel3x3_X_8b_g2(//Linear feedback shift register
 	input clk
 );
 
-	reg [7:0] shift_reg;
+	reg [15:0] shift_reg;
 	wire shift_in;
 
 	always @(posedge clk or posedge reset) begin
 		if (reset) shift_reg <= seed;
 		else if (restart) shift_reg <= seed;
-		else if (enable) shift_reg <= {shift_reg[6:0], shift_in};
+		else if (enable) shift_reg <= {shift_reg[14:0], shift_in};
 	end
 
 
 	wire xor_out;
-	assign xor_out = shift_reg[7] ^ shift_reg[6] ^ shift_reg[5] ^ shift_reg[0];
+	assign xor_out = shift_reg[15] ^ shift_reg[14] ^ shift_reg[12] ^ shift_reg[3];
 
 	wire zero_detector;
-	assign zero_detector = ~(|(shift_reg[6:0]));
+	assign zero_detector = ~(|(shift_reg[14:0]));
 	assign shift_in = xor_out ^ zero_detector;
 
 

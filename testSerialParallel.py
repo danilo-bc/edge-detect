@@ -17,8 +17,8 @@ Code must be adapted to the number of cores/cpus available in the system
 
 ray.init()
 
-size_x = 1920
-size_y = 1080
+size_x = 200
+size_y = 200
 matriz = np.random.randint(5, size=(size_x,size_y))
 
 

@@ -1,10 +1,10 @@
 module Testbench_to_file();
 	//parameter src_rows = 436;
 	//parameter src_cols = 576;
-	parameter src_rows = 50;
-	parameter src_cols = 50;
-	//parameter src_rows = 3;
-	//parameter src_cols = 3;
+	//parameter src_rows = 50;
+	//parameter src_cols = 50;
+	parameter src_rows = 3;
+	parameter src_cols = 3;
 	parameter src_size = src_rows*src_cols;
 	parameter edge_size = (src_rows-1)*(src_cols-1);
 	reg [7:0] src [0:src_size-1];
@@ -56,18 +56,21 @@ module Testbench_to_file();
 
 	initial begin
 		//Load image coded in hexadecimal as memory
+		$dumpfile("test.vcd");
+		$dumpvars(0,Testbench_to_file);
 		$display("Loading image into memory");
-		$readmemh("src.txt",src);
-		//$readmemh("square3.txt",src);
+		//$readmemh("srcFull.txt",src);
+		$readmemh("square3.txt",src);
 		clk = 0;
 		reset = 1;
+		start = 0;
 		#5 reset = 0;
 		start = 1;
+		#2
 
 		// 'Crop' area around central pixel z5
 		for (i=1;i<src_rows-1;i=i+1) begin
 			for(j=1;j<src_cols-1;j=j+1) begin
-				#4
 
 				//3x3 mask for Sobel
 				pixel_1_bin <= src[src_cols*(i-1)+j-1];
@@ -81,15 +84,15 @@ module Testbench_to_file();
 				pixel_9_bin <= src[src_cols*(i+1)+j+1];
 
 				start <= 0;
-				#514 ; // give time to calculate
+				#518 ; // give time to calculate
 
 
 			end
 		end
 
-		#532
+		#10
 
-		f = $fopen("edges_hw_stoch.txt","w");
+		f = $fopen("edges_hw.txt","w");
 		// Write to file
 		for (i=0;i<src_rows-2;i=i+1) begin
 			for(j=0;j<src_cols-2;j=j+1) begin
@@ -105,7 +108,7 @@ module Testbench_to_file();
 	always @(posedge done) begin
 		//$display("x: %b, z: %b, expected_z: %b", x_bin, z_bin, expected_z);
 		//$fwrite(f,"%b,%b\n", z_bin, expected_z);
-		start = 1;
-		edges[src_cols*(i-1)+j-1]=x_bin;
+		start <= 1;
+		edges[src_cols*(i-1)+j-1]<=x_bin;
 	end
 endmodule
