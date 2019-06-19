@@ -9,7 +9,7 @@ import time
 from stochWrapper import *
 import detSobel as detS
 
-
+ray.init()
 
 print('''------------------------------------------------------------------
 ------------------------------------------------------------------
@@ -22,7 +22,7 @@ base image returned as 'src' and
 edge image returned into 'edges' variable as numpy matrix
 ------------------------------------------------------------------
 ------------------------------------------------------------------''')
-
+"""
 random.seed(32)
 lfsrSize = 8
 half = 127
@@ -71,13 +71,13 @@ for i in range (1):
 	#print('Resultado rand alt:   ', hex(resultSrandalt))
 	print('Resultado Verilog:   ',  hex(resultSverilog))
 	#print('Resultado Erro:   ',  hex(resultError))
-
+"""
 
 
 
 # real application test:
 """
-ray.init()
+
 print("=======================")
 t1 = time.time()
 
@@ -88,7 +88,7 @@ print("Tempo: ",t2-t1)
 print("=======================")
 img1 = importHex('school_edges_hw.txt')
 """
-"""
+
 import code
 code.interact(local=locals())
-"""
+

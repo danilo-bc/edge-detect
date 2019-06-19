@@ -4,11 +4,12 @@ import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
 from bitarray import bitarray
+from scipy.stats import bernoulli
 import random
 import ray
-import matrixDiv as md
-# Importing custom modules
 
+# Importing custom modules
+import matrixDiv as md
 import stochLFSR as lfsr
 import stochSobel
 
@@ -19,20 +20,23 @@ half = 127
 auxStr = '{:0'+str(lfsrSize)+'b}'
 
 
-def sobelFilter(img=-1,r=[],rng_z_1=[]):
+def sobelFilter(img=-1,r=[],rng_z_1=[],errRate=0.0):
 	'''Function that calculates Gx and Gy of a 3x3 img in numpy matrix form
 	Arguments:
 	- img: 3x3 region to process Gx and Gy
 	'''
 	if(type(img) != np.ndarray):
 		print("Invalid 'img' parameter, returning default (0, 0)")
-		return 0, 0
+		return 0
 	elif(img.shape!=(3,3)):
 		print("Invalid 'img' shape (not 3x3), returning default (0, 0)")
-		return 0, 0
+		return 0
 	elif(img.dtype != np.float64):
 		print("Invalid 'img' dtype (not float64), returning default (0, 0)")
-		return 0, 0
+		return 0
+	elif(errRate<0.0 or errRate>1.0):
+		print("Invalid error rate, must be between 0.0 and 1.0")
+		return 0
 	else:
 		global half
 		# z refers to each pixel in the 3x3 region
@@ -53,7 +57,7 @@ def sobelFilter(img=-1,r=[],rng_z_1=[]):
 		z[7] = img[2][2]
 
 		result = 0
-		for i in range(256):
+		for i in range(255):
 			# Variables for storing next bit of
 			# respective stochastic number "s[pixel]"
 			s_1 = 8*[0]
@@ -105,32 +109,36 @@ def sobelFilter(img=-1,r=[],rng_z_1=[]):
 			rng_z_1[6] = bitarray(lfsr.shift(rng_z_1[6]))
 			rng_z_1[7] = bitarray(lfsr.shift(rng_z_1[7]))
 			
-			result = result+stochSobel.altSobel(s_1[0],
-											 s_1[1],
-											 s_1[2],
-											 s_1[3],
-											 s_1[4],
-											 s_1[5],
-											 s_1[6],
-											 s_1[7],
-											 s_2[0],
-											 s_2[1],
-											 s_2[2],
-											 s_2[3],
-											 s_2[4],
-											 s_2[5],
-											 s_2[6],
-											 s_2[7],
-											 r0,
-											 r1,
-											 r2,
-											 r3,
-											 r4)
-
+			ans = stochSobel.sobel( s_1[0],
+									s_1[1],
+									s_1[2],
+									s_1[3],
+									s_1[4],
+									s_1[5],
+									s_1[6],
+									s_1[7],
+									s_2[0],
+									s_2[1],
+									s_2[2],
+									s_2[3],
+									s_2[4],
+									s_2[5],
+									s_2[6],
+									s_2[7],
+									r0,
+									r1,
+									r2,
+									r3,
+									r4)
+			if(errRate!=0):
+				errBit = bernoulli.rvs(errRate,size=1)
+				ans = ans^errBit
+			result = result+ans 
+			
 		return result
 
 @ray.remote
-def rayCreateEdgeImage(img=-1):
+def rayCreateEdgeImage(img=-1,errRate=0.0):
 	''' Applies Sobel filter on a NxM image "img" loaded via OpenCV (cv2 package) and
 	returns three (N-2)x(M-2) images with sobelX, sobelY and both filters applied.
 	2 rows and 2 columns removed to simplify boundary conditions.
@@ -185,12 +193,12 @@ def rayCreateEdgeImage(img=-1):
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
 				# Call the convolution function
-				Gxy = sobelFilter(workingArea,r_had,rng_z_1)
+				Gxy = sobelFilter(workingArea,r_had,rng_z_1,errRate)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
 
-def rayDetectAndShow(imgpath=0):
+def rayDetectAndShow(imgpath=0,errRate=0.0):
 	# Load image from path
 	# Basic validness check before operating
 	if(isinstance(imgpath,str)):
@@ -206,7 +214,7 @@ def rayDetectAndShow(imgpath=0):
 	# This is where the processing begins
 	ray_ids = 8*[0]
 	for i in range(8):
-		ray_ids[i] = rayCreateEdgeImage.remote(np.float64(img_div[i]))
+		ray_ids[i] = rayCreateEdgeImage.remote(np.float64(img_div[i]),errRate)
 
 	xy_img_part = ray.get(ray_ids)
 	first_half = np.hstack((xy_img_part[0],xy_img_part[1],xy_img_part[2],xy_img_part[3]))
@@ -222,7 +230,7 @@ def rayDetectAndShow(imgpath=0):
 
 	return img,xy_img
 
-def createEdgeImage(img=-1):
+def createEdgeImage(img=-1,errRate=0.0):
 	''' Applies Sobel filter on a NxM image "img" loaded via OpenCV (cv2 package) and
 	returns three (N-2)x(M-2) images with sobelX, sobelY and both filters applied.
 	2 rows and 2 columns removed to simplify boundary conditions.
@@ -276,12 +284,12 @@ def createEdgeImage(img=-1):
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
 				# Call the convolution function
-				Gxy = sobelFilter(workingArea,r_had,rng_z_1)
+				Gxy = sobelFilter(workingArea,r_had,rng_z_1,errRate)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
 
-def detectAndShow(imgpath=0):
+def detectAndShow(imgpath=0,errRate=0.0):
 	# Load image from path
 	# Basic validness check before operating
 	if(isinstance(imgpath,str)):
@@ -293,7 +301,7 @@ def detectAndShow(imgpath=0):
 		print("Invalid image path")
 		return -1,-1
 	# This is where the processing begins
-	xy_img = createEdgeImage(np.array(img,np.float64))
+	xy_img = createEdgeImage(np.array(img,np.float64),errRate)
 
 	# Convert back to Grayscale
 	xy_img = np.uint8(xy_img)

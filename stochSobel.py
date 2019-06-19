@@ -21,7 +21,7 @@ def mux4(i1,i2,i3,i4,s1,s2):
 	else:
 		return i4
 
-def altSobel(z1_1,
+def sobel(z1_1,
 			 z2_1,
 			 z3_1,
 			 z4_1,
@@ -54,7 +54,7 @@ def altSobel(z1_1,
 	# Output pixel, z5
 	return mux2(abs1,abs2,r4)
 
-def sobel(z1_1,
+def ranjSobel(z1_1,
 		  z2_1,
 		  z3_1,
 		  z4_1,

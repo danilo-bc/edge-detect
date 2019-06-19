@@ -24,19 +24,20 @@ def sobelFilter(img=-1,errRate=0.0):
 	- img: 3x3 region to process Gx and Gy
 	'''
 	if(type(img) != np.ndarray):
-		print("Invalid 'img' parameter, returning default (0, 0)")
-		return 0, 0
+		print("Invalid 'img' parameter, returning default (0)")
+		return 0
 	elif(img.shape!=(3,3)):
-		print("Invalid 'img' shape (not 3x3), returning default (0, 0)")
-		return 0, 0
-	elif(img.dtype != np.uint8):
-		print("Invalid 'img' dtype (not uint8), returning default (0, 0)")
-		return 0, 0
+		print("Invalid 'img' shape (not 3x3), returning default (0)")
+		return 0
+	elif(img.dtype != np.float64):
+		print("Invalid 'img' dtype (not float64), returning default (0)")
+		return 0
 	elif(errRate<0.0 or errRate>1.0):
 		print("Invalid error rate, must be between 0.0 and 1.0")
+		return 0
 	else:
-		Gx = np.uint8(0)
-		Gy = np.uint8(0)
+		Gx = np.float64(0)
+		Gy = np.float64(0)
 
 		# Do the convolution in one of NumPy's way
 		Gx = np.sum(sKernelX*img)
@@ -50,7 +51,7 @@ def sobelFilter(img=-1,errRate=0.0):
 				ansBin[i] = ansBin[i]^errBit
 			ans = int(ansBin.to01(),2)
 
-		return ans
+		return np.uint8(ans)
 
 def createEdgeImage(img=-1,errRate=0.0):
 	''' Applies Sobel filter on a NxM image "img" loaded via OpenCV (cv2 package) and
@@ -61,10 +62,10 @@ def createEdgeImage(img=-1,errRate=0.0):
 	'''
 	if(type(img) != np.ndarray):
 		print("Invalid 'img' parameter, returning empty matrix")
-		return np.array([0],np.uint8)
-	elif(img.dtype != np.uint8):
-		print("Invalid 'img' dtype (not uint8), returning empty matrix")
-		return np.array([0],np.uint8)
+		return np.array([0],np.float64)
+	elif(img.dtype != np.float64):
+		print("Invalid 'img' dtype (not float64), returning empty matrix")
+		return np.array([0],np.float64)
 	elif(errRate<0.0 or errRate>1.0):
 		print("Invalid error rate, must be between 0.0 and 1.0")
 	else:
@@ -99,7 +100,7 @@ def detectAndShow(imgpath=0,errRate=0.0):
 		return -1,-1
 
 	# This is where the processing begins
-	xy_img = createEdgeImage(np.array(img,np.uint8),errRate)
+	xy_img = createEdgeImage(np.array(img,np.float64),errRate)
 
 	# Plot side by side for comparison
 	#plt.subplot(1,2,1), plt.imshow(img,cmap='gray')
