@@ -1,6 +1,6 @@
-module abs_diff(input [11:0] oper1,
-				input [11:0] oper2,
-				output reg [11:0] result
+module abs_diff(input 		[9:0] oper1,
+				input 		[9:0] oper2,
+				output reg 	[9:0] result
 				);
 
 	always @(*) begin

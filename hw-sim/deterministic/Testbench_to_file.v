@@ -16,7 +16,6 @@ module Testbench_to_file();
 	reg [7:0] z2;
 	reg [7:0] z3;
 	reg [7:0] z4;
-	reg [7:0] z5;
 	reg [7:0] z6;
 	reg [7:0] z7;
 	reg [7:0] z8;
@@ -34,11 +33,12 @@ module Testbench_to_file();
 					 .z2(z2),
 					 .z3(z3),
 					 .z4(z4),
-					 .z5(z5),
 					 .z6(z6),
 					 .z7(z7),
 					 .z8(z8),
 					 .z9(z9),
+					 .clk(clk),
+					 .reset(reset),
 					 .z_out(z_out)
 					);
 
@@ -49,18 +49,25 @@ module Testbench_to_file();
 
 	initial begin
 		// Default inputs for unit tests
-		z1 = 8'h01;
+		clk = 0;
+		reset = 0;
+		z1 = 8'h00;
 		z2 = 8'h00;
 		z3 = 8'h00;
 		z4 = 8'h00;
-		z5 = 8'h00;
 		z6 = 8'h00;
 		z7 = 8'h00;
 		z8 = 8'h00;
 		z9 = 8'h00;
+		#2
+		reset = 1;
+		#2
+		reset = 0;
 
 		#2
 		//Load image coded in hexadecimal as memory
+		$dumpfile("test.vcd");
+		$dumpvars(0,Testbench_to_file);
 		$display("Loading image into memory");
 		$readmemh("src.txt",src);
 		f = $fopen("edges_hw_det.txt","w");
@@ -68,17 +75,17 @@ module Testbench_to_file();
 		for (i=1;i<src_rows-1;i=i+1) begin
 			for(j=1;j<src_cols-1;j=j+1) begin
 				// Row above z5
-				z1 = src[src_cols*(i-1)+j-1];
-				z2 = src[src_cols*(i-1)+j];
-				z3 = src[src_cols*(i-1)+j+1];
+				z1 <= src[src_cols*(i-1)+j-1];
+				z2 <= src[src_cols*(i-1)+j];
+				z3 <= src[src_cols*(i-1)+j+1];
 				// Row of z5
-				z4 = src[src_cols*(i)+j-1];
-				z5 = src[src_cols*(i)+j];
-				z6 = src[src_cols*(i)+j+1];
+				z4 <= src[src_cols*(i)+j-1];
+				//unused middle pixel
+				z6 <= src[src_cols*(i)+j+1];
 				// Row below z5
-				z7 = src[src_cols*(i+1)+j-1];
-				z8 = src[src_cols*(i+1)+j];
-				z9 = src[src_cols*(i+1)+j+1];
+				z7 <= src[src_cols*(i+1)+j-1];
+				z8 <= src[src_cols*(i+1)+j];
+				z9 <= src[src_cols*(i+1)+j+1];
 
 				#2 // give an instant for z_out to update
 				//save 'edges' array for possible future use
