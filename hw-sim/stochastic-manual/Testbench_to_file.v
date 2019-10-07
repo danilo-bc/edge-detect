@@ -6,7 +6,7 @@ module Testbench_to_file();
 	parameter src_rows = 3;
 	parameter src_cols = 3;
 	parameter src_size = src_rows*src_cols;
-	parameter edge_size = (src_rows-1)*(src_cols-1);
+	parameter edge_size = (src_rows-2)*(src_cols-2);
 	reg [7:0] src [0:src_size-1];
 	reg [7:0] edges [0:edge_size-1];
 

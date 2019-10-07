@@ -87,7 +87,7 @@ def createEdgeImage(img=-1,errRate=0.0):
 
 		return xy_image
 
-def detectAndShow(imgpath=0,errRate=0.0):
+def detectAndShow(imgpath=0,errRate=0.0,show=True):
 	# Load image from path
 	# Basic validness check before operating
 	if(isinstance(imgpath,str)):
@@ -109,10 +109,11 @@ def detectAndShow(imgpath=0,errRate=0.0):
 	#plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
 
 	# Plot only results
-	plt.imshow(xy_img,cmap='gray')
-	plt.show()
+	if(show):
+		plt.imshow(xy_img,cmap='gray')
+		plt.show()
 
-	return img,xy_img
+	return np.uint8(img),np.uint8(xy_img)
 
 def detectAndWritePGM(imgpath=0):
 	# Load image from path
@@ -332,3 +333,53 @@ def showHex(filename=None):
 		plt.imshow(decoded_mat,cmap='gray')
 		plt.show()
 		return decoded_mat
+
+
+def hexToPGM(filename=None,outputfile=None):
+	'''Reads a txt file containing a NumPy image in uint8
+	format saved in pairs of hexadecimal characters.
+	Shows the image on the screen and returns the
+	image as a NumPy uint8 array.
+	'''
+	if(not filename or not outputfile):
+		print("Invalid filename")
+		return 0
+	elif(isinstance(type(filename),str) and isinstance(type(outputfile),str)):
+		print("Invalid filename")
+		return None
+	elif(filename[-3:]!='txt'):
+		print("Invalid hex filename")
+		return 0
+	elif(outputfile[-3:]!='pgm'):
+		print("Invalid PGM filename")
+		return 0
+	else:
+		#Load image stored in hex txt files
+		input_img = open(filename)
+
+		#Put the contents into list of strings
+		input_str = input_img.readlines()
+
+		#Close file after reading
+		input_img.close()
+
+		#Prepare matrices
+		decoded_mat = []
+
+		#Take away trailing new line('\n') and convert to
+		#List of byte arrays
+		for i in range(len(input_str)):
+			input_str[i] = input_str[i].rstrip('\n')
+			decoded_mat.append(bytearray.fromhex(input_str[i]))
+
+		#Convert bytes into unsigned 8-bit integers
+		#This is one of the compatible image formats
+		decoded_mat = np.array(decoded_mat,np.uint8)
+
+		flag1 = cv.imwrite(outputfile,decoded_mat)
+		if(flag1):
+			print('''File''',outputfile,''' successfully created''')
+		else:
+			print('''Something went wrong during the saving process''')
+
+	return decoded_mat

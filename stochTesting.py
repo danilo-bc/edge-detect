@@ -22,7 +22,7 @@ base image returned as 'src' and
 edge image returned into 'edges' variable as numpy matrix
 ------------------------------------------------------------------
 ------------------------------------------------------------------''')
-"""
+
 random.seed(32)
 lfsrSize = 8
 half = 127
@@ -54,10 +54,10 @@ rng_z_1_verilog = [bitarray('00010011'),
 for i in range(8):
 	rng_z_1_rand[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
 
-img = np.array([[0xAA,0xA7,0xA9],
-				[0x40,0x40,0x42],
-				[0x43,0x47,0x50]],np.float64)
-img = np.float64(loadHex('./hw-sim/stochastic-manual/square3.txt'))
+img = np.array([[	54,53,		44],
+				[	127,130,	149],
+				[	130,131,	139]],np.float64)
+#img = np.float64(loadHex('./hw-sim/stochastic-manual/square3.txt'))
 for i in range (1):
 	#img = np.float64(np.random.randint(255,size=(3,3)))
 	print(img)
@@ -67,11 +67,11 @@ for i in range (1):
 	resultSverilog = sobelFilter(img,r_had,rng_z_1_verilog)
 
 	#img = np.rot90(img)
-	print('Resultado det:        ', hex(resultD))
+	print('Resultado det:        ', int(resultD))
 	#print('Resultado rand alt:   ', hex(resultSrandalt))
 	print('Resultado Verilog:   ',  hex(resultSverilog))
 	#print('Resultado Erro:   ',  hex(resultError))
-"""
+
 
 
 
@@ -89,6 +89,6 @@ print("=======================")
 img1 = importHex('school_edges_hw.txt')
 """
 
-import code
-code.interact(local=locals())
+# import code
+# code.interact(local=locals())
 

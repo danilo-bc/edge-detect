@@ -198,7 +198,7 @@ def rayCreateEdgeImage(img=-1,errRate=0.0):
 
 		return xy_image
 
-def rayDetectAndShow(imgpath=0,errRate=0.0):
+def rayDetectAndShow(imgpath=0,errRate=0.0,show=True):
 	# Load image from path
 	# Basic validness check before operating
 	if(isinstance(imgpath,str)):
@@ -225,8 +225,9 @@ def rayDetectAndShow(imgpath=0,errRate=0.0):
 	xy_img = np.uint8(xy_img)
 
 	# Plot only results
-	plt.imshow(xy_img,cmap='gray')
-	plt.show()
+	if(show):
+		plt.imshow(xy_img,cmap='gray')
+		plt.show()
 
 	return img,xy_img
 
