@@ -1,10 +1,10 @@
 module Testbench_to_file();
 	//parameter src_rows = 436;
 	//parameter src_cols = 576;
-	//parameter src_rows = 50;
-	//parameter src_cols = 50;
-	parameter src_rows = 3;
-	parameter src_cols = 3;
+	parameter src_rows = 147;
+	parameter src_cols = 143;
+	//parameter src_rows = 3;
+	//parameter src_cols = 3;
 	parameter src_size = src_rows*src_cols;
 	parameter edge_size = (src_rows-2)*(src_cols-2);
 	reg [7:0] src [0:src_size-1];
@@ -59,8 +59,8 @@ module Testbench_to_file();
 		$dumpfile("test.vcd");
 		$dumpvars(0,Testbench_to_file);
 		$display("Loading image into memory");
-		//$readmemh("srcFull.txt",src);
-		$readmemh("square3.txt",src);
+		$readmemh("src.txt",src);
+		//$readmemh("square3.txt",src);
 		clk = 0;
 		reset = 1;
 		start = 0;
@@ -84,7 +84,7 @@ module Testbench_to_file();
 				pixel_9_bin <= src[src_cols*(i+1)+j+1];
 
 				start <= 0;
-				#518 ; // give time to calculate
+				#522 ; // give time to calculate
 
 
 			end

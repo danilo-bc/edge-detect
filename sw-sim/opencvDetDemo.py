@@ -11,7 +11,7 @@ delta = 0
 ddepth = cv.CV_16S
 
 # Load the image
-src = cv.imread('./images/aerial/school.pgm', cv.IMREAD_COLOR)
+src = cv.imread('./firefoxlogo.png', cv.IMREAD_COLOR)
 # Check if image is loaded fine
 if src is None:
 	print ('Error opening image: ' + argv[0])

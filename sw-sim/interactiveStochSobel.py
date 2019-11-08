@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import personal implementation library
-from stochWrapper import *
+from stoch.stochWrapper import *
 
 ray.init()
 

@@ -13,7 +13,7 @@ This project intends to serve as a model for future Stochastic Computing applica
     - [x] LFSR
     - [x] Module
     - [x] Wrapper
-  - [ ] Hardware
+  - [x] Hardware
 
 Remarks:
 * Deterministic implementation:

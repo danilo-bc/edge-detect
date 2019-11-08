@@ -1,6 +1,6 @@
 module Testbench_to_file();
-	parameter src_rows = 436;
-	parameter src_cols = 576;
+	parameter src_rows = 147;
+	parameter src_cols = 143;
 	parameter src_size = src_rows*src_cols;
 	parameter edge_size = (src_rows-1)*(src_cols-1);
 	reg [7:0] src [0:src_size-1];

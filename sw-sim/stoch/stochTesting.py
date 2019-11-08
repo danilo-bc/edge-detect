@@ -54,9 +54,9 @@ rng_z_1_verilog = [bitarray('00010011'),
 for i in range(8):
 	rng_z_1_rand[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
 
-img = np.array([[	54,53,		44],
-				[	127,130,	149],
-				[	130,131,	139]],np.float64)
+img = np.array([[	0x10,0x10,	0x12],
+				[	0x12,0x13,	0x14],
+				[	0x00,0x00,	0x13]],np.float64)
 #img = np.float64(loadHex('./hw-sim/stochastic-manual/square3.txt'))
 for i in range (1):
 	#img = np.float64(np.random.randint(255,size=(3,3)))
