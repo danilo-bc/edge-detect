@@ -22,7 +22,7 @@ half = 127
 auxStr = '{:0'+str(lfsrSize)+'b}'
 
 
-def sobelFilter(img=-1,r=[],rng_z_1=[],errRate=0.0):
+def sobelFilter(img=-1,errRate=0.0):
 	'''Function that calculates Gx and Gy of a 3x3 img in numpy matrix form
 	Arguments:
 	- img: 3x3 region to process Gx and Gy
@@ -41,6 +41,8 @@ def sobelFilter(img=-1,r=[],rng_z_1=[],errRate=0.0):
 		return 0
 	else:
 		global half
+		global lfsrSize
+		global auxStr
 		# z refers to each pixel in the 3x3 region
 		z = 8*[0]
 		# upper row
@@ -59,7 +61,26 @@ def sobelFilter(img=-1,r=[],rng_z_1=[],errRate=0.0):
 		z[7] = img[2][2]
 
 		result = 0
-		for i in range(255):
+
+		#5 numbers from 16x16 hadamard matrix that have SCC = 0
+		#r_had =[bitarray('1001100110011001'),bitarray('1111000011110000'),
+		#		bitarray('1010010110100101'),bitarray('1100001111000011'),
+		#		bitarray('1001011010010110')]
+		r = [bitarray('10011001'),bitarray('11110000'),
+				bitarray('10100101'),bitarray('11000011'),
+				bitarray('10010110')]
+
+
+		# 8 random streams for all but center pixel
+		# 4 random streams for copies of
+		# - z2, z4, z6 and z8 for vertical/horizontal
+		# - z1, z3, z7 and z9 for diagonal sobel
+		random.seed(32)
+		rng_z_1 = 8*[0]
+		for i in range(8):
+			rng_z_1[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
+
+		for i in range(256):
 			# Variables for storing next bit of
 			# respective stochastic number "s[pixel]"
 			s_1 = 8*[0]
@@ -154,36 +175,6 @@ def rayCreateEdgeImage(img=-1,errRate=0.0):
 		print("Invalid 'img' dtype (not float64), returning empty matrix")
 		return np.array([0],np.float64)
 	else:
-		global lfsrSize
-		global lfsr_seeds
-		global auxStr
-		r = 5*[0]
-		root_lfsr = bitarray('1010010110100101')
-		#5 numbers from 16x16 hadamard matrix that have SCC = 0
-		#r_had =[bitarray('1001100110011001'),bitarray('1111000011110000'),
-		#		bitarray('1010010110100101'),bitarray('1100001111000011'),
-		#		bitarray('1001011010010110')]
-		r_had =[bitarray('10011001'),bitarray('11110000'),
-				bitarray('10100101'),bitarray('11000011'),
-				bitarray('10010110')]
-
-
-		# 8 random streams for all but center pixel
-		# 4 random streams for copies of
-		# - z2, z4, z6 and z8 for vertical/horizontal
-		# - z1, z3, z7 and z9 for diagonal sobel
-		rng_z_1 = 8*[0]
-		for i in range(8):
-			rng_z_1[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
-		#rng_z_1 = [bitarray('00010011'),
-		#		   bitarray('11101101'),
-		#		   bitarray('00110110'),
-		#		   bitarray('00100101'),
-		#		   bitarray('01001101'),
-		#		   bitarray('10110010'),
-		#		   bitarray('11100110'),
-		#		   bitarray('00111100')]
-
 		# Create images ignoring last row and column for simplicity in
 		# convolution operation
 		xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
@@ -195,7 +186,7 @@ def rayCreateEdgeImage(img=-1,errRate=0.0):
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
 				# Call the convolution function
-				Gxy = sobelFilter(workingArea,r_had,rng_z_1,errRate)
+				Gxy = sobelFilter(workingArea,errRate)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
@@ -247,34 +238,6 @@ def createEdgeImage(img=-1,errRate=0.0):
 		print("Invalid 'img' dtype (not float64), returning empty matrix")
 		return np.array([0],np.float64)
 	else:
-		global lfsrSize
-		global lfsr_seeds
-		global auxStr
-		r = 5*[0]
-		root_lfsr = bitarray('1010010110100101')
-		#5 numbers from 16x16 hadamard matrix that have SCC = 0
-		#r_had =[bitarray('1001100110011001'),bitarray('1111000011110000'),
-		#		bitarray('1010010110100101'),bitarray('1100001111000011'),
-		#		bitarray('1001011010010110')]
-		r_had =[bitarray('10011001'),bitarray('11110000'),
-				bitarray('10100101'),bitarray('11000011'),
-				bitarray('10010110')]
-
-		# 8 random streams for all but center pixel
-		# 4 random streams for copies of
-		# - z2, z4, z6 and z8 for vertical/horizontal
-		# - z1, z3, z7 and z9 for diagonal sobel
-		rng_z_1 = 8*[0]
-		for i in range(8):
-			rng_z_1[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
-		#rng_z_1 = [bitarray('00010011'),
-		#		   bitarray('11101101'),
-		#		   bitarray('00110110'),
-		#		   bitarray('00100101'),
-		#		   bitarray('01001101'),
-		#		   bitarray('10110010'),
-		#		   bitarray('11100110'),
-		#		   bitarray('00111100')]
 		
 		# Create images ignoring last row and column for simplicity in
 		# convolution operation
@@ -287,7 +250,7 @@ def createEdgeImage(img=-1,errRate=0.0):
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
 				# Call the convolution function
-				Gxy = sobelFilter(workingArea,r_had,rng_z_1,errRate)
+				Gxy = sobelFilter(workingArea,errRate)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
