@@ -4,10 +4,12 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import sys 
+sys.path.append("..")
 
 # Import personal implementation library
-from stochWrapper import *
-import detSobel as detS
+from stoch.stochWrapper import *
+import det.detSobel as detS
 
 ray.init()
 
@@ -67,7 +69,7 @@ for i in range (1):
 	resultSverilog = sobelFilter(img,r_had,rng_z_1_verilog)
 
 	#img = np.rot90(img)
-	print('Resultado det:        ', int(resultD))
+	print('Resultado det:        ', hex(resultD))
 	#print('Resultado rand alt:   ', hex(resultSrandalt))
 	print('Resultado Verilog:   ',  hex(resultSverilog))
 	#print('Resultado Erro:   ',  hex(resultError))
