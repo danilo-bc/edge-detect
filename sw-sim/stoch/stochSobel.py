@@ -1,6 +1,6 @@
 # Author: Danilo Cavalcanti
 # Importing System Modules
-from bitarray import bitarray
+#from bitarray import bitarray
 
 # Importing auxiliary modules
 
