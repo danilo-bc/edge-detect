@@ -25,13 +25,19 @@ Remarks:
 Python dependencies:
 * Python >= 3.6.7
 * Libraries:
-  * opencv
+  * opencv-python
   * matplotlib
   * numpy
+  * scipy
   * bitarray
   * ray (recommended)
     * for parallel processing in simulation
-    * only supported on Linux and MacOS
+    * currently, only supported on Linux and MacOS
+  * wheel (recommended for bitarray support)
+  * setproctitle (optional)
+  * psutil (optional)
+  * aiohttp (optional)
+  * grpcio (optional)
 
 Hardware simulation dependencies:
 * Icarus Verilog 10.1
@@ -40,13 +46,9 @@ Hardware simulation dependencies:
 This project currently uses stochastic circuits derived from ones synthesized with [scsynth/STRAUSS](https://github.com/arminalaghi/scsynth)
 
 Installation recommendation:
-* Newer versions of Python 3 (like 3.6.x) come with pip preinstalled. [PyPi/pip](https://pypi.org/) is a simple package manager for Python (normally aliased as pip3)
+* Newer versions of Python 3 (like 3.8.x) come with pip preinstalled. [PyPi/pip](https://pypi.org/) is a simple package manager for Python (normally aliased as pip3)
 * For this project:
 ```bash
-pip3 install --user numpy
-pip3 install --user opencv-python
-pip3 install --user matplotlib
-pip3 install --user bitarray
-pip3 install --user ray
+pip3 install --user numpy scipy matplotlib wheel opencv-python ray bitarray setproctitle psutil aiohttp grpcio
 ```
 

@@ -2,7 +2,7 @@ module Testbench_to_file();
 	//parameter src_rows = 436;
 	//parameter src_cols = 576;
 	parameter src_rows = 147;
-	parameter src_cols = 143;
+	parameter src_cols = 144;
 	//parameter src_rows = 3;
 	//parameter src_cols = 3;
 	parameter src_size = src_rows*src_cols;
