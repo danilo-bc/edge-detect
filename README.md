@@ -17,6 +17,7 @@ This project intends to serve as a model for future Stochastic Computing applica
 
 ## Quick-start
 All commands consider a Linux environment
+
 ### Deterministic implementation
 ```bash
 cd ./sw-sim
@@ -36,11 +37,10 @@ This version takes more time than the deterministic version since Python types a
 ## Remarks:
 * Deterministic implementation:
 	* Works as OpenCV's Sobel example without image blurring
-* Stochastic implementation:
-  * Hardware implementation needs to be reviewed
 * Image database for testing from ["CURE-OR: Challenging Unreal and Real Environment for Object Recognition", IEEE Dataport, 2019. [Online]. Available: http://dx.doi.org/10.21227/h4fr-h268. Accessed: Nov. 11, 2019.](https://ieee-dataport.org/open-access/cure-or-challenging-unreal-and-real-environment-object-recognition)
 * Sample image file [800px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg](https://commons.wikimedia.org/wiki/File:1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg) from Wikimedia Commons. Author: [KARTY JazZ](https://commons.wikimedia.org/wiki/User:KARTY_JazZ).
 
+## Dependencies
 Python dependencies:
 * Python >= 3.6.7
 * Libraries:
@@ -60,7 +60,7 @@ Python dependencies:
 
 Hardware simulation dependencies:
 * Icarus Verilog 10.1
-* make (for ease of executing multiple commands)
+* `make` (for ease of executing multiple commands)
 
 This project currently uses stochastic circuits derived from ones synthesized with [scsynth/STRAUSS](https://github.com/arminalaghi/scsynth)
 
