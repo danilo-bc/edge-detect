@@ -38,12 +38,9 @@ def sobelFilter(img=-1,errRate=0.0):
 		print("Invalid error rate, must be between 0.0 and 1.0")
 		return 0
 	else:
-		Gx = np.float64(0)
-		Gy = np.float64(0)
-
 		# Do the convolution in one of NumPy's way
-		Gx = np.sum(sKernelX*img)
-		Gy = np.sum(sKernelY*img)
+		Gx = np.sum(sKernelX*img, dtype='float64')
+		Gy = np.sum(sKernelY*img, dtype='float64')
 
 		ans = np.uint8((0.25*np.abs(Gx)+0.25*np.abs(Gy))/2.0)
 		if(errRate!=0):
