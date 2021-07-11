@@ -22,7 +22,7 @@ All commands consider a Linux environment
 ```bash
 cd ./sw-sim
 python interactiveDetSobel.py
-src, edges = detectAndShow('800px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
+src, edges = detectAndShow('320px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
 ```
 This will calculate an edge image in a few seconds and plot the result in a new window. It also returns the source image as a numpy array (`src`) and the 8-bit `edges` array.
 
@@ -30,7 +30,7 @@ This will calculate an edge image in a few seconds and plot the result in a new 
 ```bash
 cd ./sw-sim
 python interactiveStochSobel.py
-src, edges = detectAndShow('800px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
+src, edges = detectAndShow('320px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
 ```
 This version takes more time than the deterministic version since Python types and code have not been optimized to do the bit-wise operations that Stochastic Computer takes advantage of.
 
@@ -38,7 +38,7 @@ This version takes more time than the deterministic version since Python types a
 * Deterministic implementation:
 	* Works as OpenCV's Sobel example without image blurring
 * Image database for testing from ["CURE-OR: Challenging Unreal and Real Environment for Object Recognition", IEEE Dataport, 2019. [Online]. Available: http://dx.doi.org/10.21227/h4fr-h268. Accessed: Nov. 11, 2019.](https://ieee-dataport.org/open-access/cure-or-challenging-unreal-and-real-environment-object-recognition)
-* Sample image file [800px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg](https://commons.wikimedia.org/wiki/File:1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg) from Wikimedia Commons. Author: [KARTY JazZ](https://commons.wikimedia.org/wiki/User:KARTY_JazZ).
+* Sample image file [320px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg](https://commons.wikimedia.org/wiki/File:1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg) from Wikimedia Commons. Author: [KARTY JazZ](https://commons.wikimedia.org/wiki/User:KARTY_JazZ).
 
 ## Dependencies
 Python dependencies:
