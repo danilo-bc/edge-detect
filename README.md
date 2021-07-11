@@ -46,7 +46,7 @@ Expected image:
 
 ## Dependencies
 Python dependencies:
-* Python >= 3.6.7
+* Python >= 3.9
 * Libraries:
   * opencv-python
   * matplotlib
@@ -57,11 +57,6 @@ Python dependencies:
     * for parallel processing in simulation
     * currently, only supported on Linux and MacOS
   * wheel (recommended for bitarray support)
-  * setproctitle (optional)
-  * psutil (optional)
-  * aiohttp (optional)
-  * grpcio (optional)
-
 Hardware simulation dependencies:
 * Icarus Verilog 10.1
 * `make` (for ease of executing multiple commands)
@@ -72,6 +67,6 @@ Installation recommendation:
 * Newer versions of Python 3 (like 3.8.x) come with pip preinstalled. [PyPi/pip](https://pypi.org/) is a simple package manager for Python (normally aliased as pip3)
 * For this project:
 ```bash
-pip3 install --user numpy scipy matplotlib wheel opencv-python ray bitarray setproctitle psutil aiohttp grpcio
+pip3 install --user wheel numpy scipy matplotlib opencv-python bitarray 'ray[default]'
 ```
 
