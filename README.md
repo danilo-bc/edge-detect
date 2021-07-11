@@ -25,6 +25,8 @@ python interactiveDetSobel.py
 src, edges = detectAndShow('320px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
 ```
 This will calculate an edge image in a few seconds and plot the result in a new window. It also returns the source image as a numpy array (`src`) and the 8-bit `edges` array.
+Expected image:
+![Temple View edge image processed by deterministic algorithm](./320px_det_edges.png?raw=true "Title")
 
 ### Stochastic implementation
 ```bash
