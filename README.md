@@ -26,7 +26,7 @@ src, edges = detectAndShow('320px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple
 ```
 This will calculate an edge image in a few seconds and plot the result in a new window. It also returns the source image as a numpy array (`src`) and the 8-bit `edges` array.
 Expected image:
-![Temple View edge image processed by deterministic algorithm](./320px_det_edges.png?raw=true "Title")
+![Temple View edge image processed by deterministic algorithm](./320px_det_edges.png?raw=true "Temple View edge image processed by deterministic algorithm")
 
 ### Stochastic implementation
 ```bash
@@ -35,6 +35,8 @@ python interactiveStochSobel.py
 src, edges = detectAndShow('320px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
 ```
 This version takes more time than the deterministic version since Python types and code have not been optimized to do the bit-wise operations that Stochastic Computer takes advantage of.
+Expected image:
+![Temple View edge image processed by stochastic algorithm](./320px_stoch_edges.png?raw=true "Temple View edge image processed by stochastic algorithm")
 
 ## Remarks:
 * Deterministic implementation:
