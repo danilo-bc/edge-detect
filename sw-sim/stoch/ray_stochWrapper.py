@@ -1,13 +1,16 @@
 # Author: Danilo Cavalcanti
 # Importing System Modules
+import ray
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
 from bitarray import bitarray
 from scipy.stats import bernoulli
 # Importing custom modules
-import stoch.stochLFSR as lfsr
 import stoch.stochSobel as stochSobel
+
+# Use the same stochastic filter kernel
+from stoch.stochWrapper import sobelFilter
 
 import aux.matrixDiv as md
 from aux.iohelpers import *
@@ -17,113 +20,10 @@ lfsrSize = 8
 half = 127
 auxStr = '{:0'+str(lfsrSize)+'b}'
 
-def sobelFilter(img=-1,rngSequenceList=[],errRate=0.0):
-	'''Function that calculates Gx and Gy of a 3x3 img in numpy matrix form
-	Arguments:
-	- img: 3x3 region to process Gx and Gy
-	- This version gives the same result as sobelFilter, but obsfucates a few operations
-	but runs in roughly 1/3 of the time
-	'''
-	if(type(img) != np.ndarray):
-		print("Invalid 'img' parameter, returning default (0, 0)")
-		return 0
-	elif(img.shape!=(3,3)):
-		print("Invalid 'img' shape (not 3x3), returning default (0, 0)")
-		return 0
-	elif(img.dtype != np.float64):
-		print("Invalid 'img' dtype (not float64), returning default (0, 0)")
-		return 0
-	elif(errRate<0.0 or errRate>1.0):
-		print("Invalid error rate, must be between 0.0 and 1.0")
-		return 0
-	else:
-		global half
-		# z refers to each pixel in the 3x3 region
-		z = 8*[0]
-		# upper row
-		z[0] = img[0][0]
-		z[1] = img[0][1]
-		z[2] = img[0][2]
-
-		# middle row
-		z[3] = img[1][0]
-		#no middle pixel
-		z[4] = img[1][2]
-
-		# lower row
-		z[5] = img[2][0]
-		z[6] = img[2][1]
-		z[7] = img[2][2]
-
-		result = 0
-		
-		for i in range(256):
-			# Variables for storing next bit of
-			# respective stochastic number "s[pixel]"
-			s_1 = 8*[0]
-			s_2 = 8*[0]
-			# Stochastic Number Generation of all constants (0.5 for all)
-
-			r0, r1, r2, r3, r4 = np.greater([half, half, half, half, half],
-											[rngSequenceList[0][i],
-											 rngSequenceList[1][i],
-											 rngSequenceList[2][i],
-											 rngSequenceList[3][i],
-											 rngSequenceList[4][i]])
-
-			# Stochastic Number Generation of all inputs
-			s_1[0], s_1[1], s_2[1], s_1[2], s_1[5], s_1[6], s_2[6], s_1[7], s_2[0], s_1[3], s_2[3], s_2[5], s_2[2], s_1[4], s_2[4], s_2[7] = np.greater([z[0], z[1], z[1], z[2], z[5], z[6], z[6], z[7], z[0], z[3], z[3], z[5], z[2], z[4], z[4], z[7]],
-																																						[rngSequenceList[ 5][i],
-																																						 rngSequenceList[ 6][i],
-																																						 rngSequenceList[ 7][i],
-																																						 rngSequenceList[ 8][i],
-																																						 rngSequenceList[ 5][i],
-																																						 rngSequenceList[ 6][i],
-																																						 rngSequenceList[ 7][i],
-																																						 rngSequenceList[ 8][i],
-																																						 rngSequenceList[ 9][i],
-																																						 rngSequenceList[10][i],
-																																						 rngSequenceList[11][i],
-																																						 rngSequenceList[12][i],
-																																						 rngSequenceList[ 9][i],
-																																						 rngSequenceList[10][i],
-																																						 rngSequenceList[11][i],
-																																						 rngSequenceList[12][i]]
-																																						)
-			
-
-			ans = stochSobel.sobel( s_1[0],
-									s_1[1],
-									s_1[2],
-									s_1[3],
-									s_1[4],
-									s_1[5],
-									s_1[6],
-									s_1[7],
-									s_2[0],
-									s_2[1],
-									s_2[2],
-									s_2[3],
-									s_2[4],
-									s_2[5],
-									s_2[6],
-									s_2[7],
-									    r0,
-									    r1,
-									    r2,
-									    r3,
-									    r4)
-
-			if(errRate!=0):
-				errBit = bernoulli.rvs(errRate,size=1)
-				ans = ans^errBit
-			result = result+ans 
-			
-		return result
-
-def createEdgeImage(img=-1,errRate=0.0):
+@ray.remote
+def ray_createEdgeImage(img=-1,errRate=0.0):
 	''' Applies Sobel filter on a NxM image "img" loaded via OpenCV (cv2 package) and
-	returns one (N-2)x(M-2) image with both filters applied.
+	returns three (N-2)x(M-2) images with both filters applied.
 	2 rows and 2 columns removed to simplify boundary conditions.
 	Arguments:
 	- img: Region in Grayscale color scheme and np.float64 format
@@ -153,8 +53,8 @@ def createEdgeImage(img=-1,errRate=0.0):
 		0b00010110, 0b00101100, 0b01011001, 0b10110010, 0b01100100, 0b11001000, 0b10010000, 0b00100001, 0b01000010, 0b10000101, 0b00001010, 0b00010100, 0b00101000, 0b01010001, 0b10100010, 0b01000100, 
 		0b10001001, 0b00010010, 0b00100100, 0b01001001, 0b10010010, 0b00100101, 0b01001010, 0b10010101, 0b00101010, 0b01010101, 0b10101010, 0b01010100, 0b10101001, 0b01010011, 0b10100110, 0b01001100]
 		,np.uint8)
-
-		# 5 numbers from 8x8 Hadamard matrix that have SCC = 0
+		
+		#5 numbers from 8x8 hadamard matrix that have SCC = 0
 		r = [int(np.where(rngSequence==int('10011001',2))[0]),
 			 int(np.where(rngSequence==int('11110000',2))[0]),
 			 int(np.where(rngSequence==int('10100101',2))[0]),
@@ -170,7 +70,10 @@ def createEdgeImage(img=-1,errRate=0.0):
 		# 8 random streams for all but center pixel
 		# - z2, z4, z6 and z8 for vertical/horizontal
 		# - z1, z3, z7 and z9 for diagonal sobel
-		
+		#random.seed(32)
+		#rng_z_1 = 8*[0]
+		#for i in range(8):
+		#	rng_z_1[i] = bitarray(auxStr.format(random.getrandbits(lfsrSize)))
 		# Random values precalculated with the code above:
 		rng_z_1 = [int(np.where(rngSequence==int('00010011',2))[0]),
 				   int(np.where(rngSequence==int('11101101',2))[0]),
@@ -186,8 +89,8 @@ def createEdgeImage(img=-1,errRate=0.0):
 			rngSequenceList.append(temp)
 		
 		
-		# Create images ignoring last row and column for because
-		# corner cases are note covered
+		# Create images ignoring last row and column for simplicity in
+		# convolution operation
 		xy_image = np.zeros([img.shape[0]-2,img.shape[1]-2])
 
 		for i in range(1,img.shape[0]-1):
@@ -197,23 +100,34 @@ def createEdgeImage(img=-1,errRate=0.0):
 				# kept explicit for clarity
 				ixgrid = np.ix_([i-1,i,i+1],[j-1,j,j+1])
 				workingArea = img[ixgrid]
-				
-				Gxy = sobelFilter(workingArea, rngSequenceList, errRate)
+				# Call the convolution function
+				Gxy = sobelFilter(workingArea,rngSequenceList,errRate)
 				xy_image[i-1][j-1] = Gxy
 
 		return xy_image
 
-def detectAndShow(imgpath=0, errRate=0.0, show=True):
-	if(isinstance(imgpath, str)):
-		img = cv.imread(imgpath, cv.IMREAD_GRAYSCALE)
-		if(isinstance(img, type(None))):
+def ray_detectAndShow(imgpath=0,errRate=0.0,show=True):
+	# Load image from path
+	# Basic validness check before operating
+	if(isinstance(imgpath,str)):
+		img = cv.imread(imgpath,cv.IMREAD_GRAYSCALE)
+		if(isinstance(img,type(None))):
 			print("Image could not be loaded")
 			return -1,-1
 	else:
 		print("Invalid image path")
 		return -1,-1
 
-	xy_img = createEdgeImage(np.array(img,np.float64),errRate)
+	img_div = md.div8(img)
+	# This is where the processing begins
+	ray_ids = 8*[0]
+	for i in range(8):
+		ray_ids[i] = ray_createEdgeImage.remote(np.float64(img_div[i]),errRate)
+
+	xy_img_part = ray.get(ray_ids)
+	first_half = np.hstack((xy_img_part[0],xy_img_part[1],xy_img_part[2],xy_img_part[3]))
+	second_half = np.hstack((xy_img_part[4],xy_img_part[5],xy_img_part[6],xy_img_part[7]))
+	xy_img = np.vstack((first_half,second_half))
 
 	# Convert back to Grayscale
 	xy_img = np.uint8(xy_img)
@@ -223,4 +137,4 @@ def detectAndShow(imgpath=0, errRate=0.0, show=True):
 		plt.imshow(xy_img,cmap='gray')
 		plt.show()
 
-	return img, xy_img
+	return img,xy_img
