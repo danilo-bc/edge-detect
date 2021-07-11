@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from bitarray import bitarray
 from scipy.stats import bernoulli
 
-from aux.auxi import *
+from aux.iohelpers import *
 
 # Making constants the Python way
 # "Making them in a separate file and importing

@@ -10,7 +10,7 @@ import stoch.stochLFSR as lfsr
 import stoch.stochSobel as stochSobel
 
 import aux.matrixDiv as md
-from aux.auxi import *
+from aux.iohelpers import *
 
 # "Environment constants"
 lfsrSize = 8
