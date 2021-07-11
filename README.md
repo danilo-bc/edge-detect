@@ -15,7 +15,25 @@ This project intends to serve as a model for future Stochastic Computing applica
     - [x] Wrapper
   - [x] Hardware
 
-Remarks:
+## Quick-start
+All commands consider a Linux environment
+### Deterministic implementation
+```bash
+cd ./sw-sim
+python interactiveDetSobel.py
+src, edges = detectAndShow('800px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
+```
+This will calculate an edge image in a few seconds and plot the result in a new window. It also returns the source image as a numpy array (`src`) and the 8-bit `edges` array.
+
+### Stochastic implementation
+```bash
+cd ./sw-sim
+python interactiveStochSobel.py
+src, edges = detectAndShow('800px-1000_years_Old_Thanjavur_Brihadeeshwara_Temple_View_at_Sunrise.jpg')
+```
+This version takes more time than the deterministic version since Python types and code have not been optimized to do the bit-wise operations that Stochastic Computer takes advantage of.
+
+## Remarks:
 * Deterministic implementation:
 	* Works as OpenCV's Sobel example without image blurring
 * Stochastic implementation:
