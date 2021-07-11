@@ -38,6 +38,13 @@ This version takes more time than the deterministic version since Python types a
 Expected image:
 ![Temple View edge image processed by stochastic algorithm](./320px_stoch_edges.png?raw=true "Temple View edge image processed by stochastic algorithm")
 
+#### Parallel processing with Ray
+If available, you may opt to use
+```bash
+python interactiveRayStochSobel.py
+```
+instead. This version defaults to starting 8 threads to process images, which is about 8 times faster than the single-threaded version on modern CPUs (which already come with 8 threads).
+
 ## Remarks:
 * Deterministic implementation:
 	* Works as OpenCV's Sobel example without image blurring
